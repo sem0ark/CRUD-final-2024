@@ -61,7 +61,6 @@ Access model: Authorization via JWT, issued by POST /login. _JWT should last 1 h
 - Failure:
 	- `403 {}` Permission denied
 
-
 `GET /project/<project_id>/info` - Return project's details
 - Access: PARTICIPANT, OWNER
 - Success: `200 { id: UUID, name: string, description: name }`
@@ -190,3 +189,33 @@ Environment management:
 	- testing/linting/building
 	- pushing to registry & deploy to cloud on merge request approval
 
+### Database
+[See the structure in dbdiagram.io](https://dbdiagram.io/d/65ce6aa7ac844320ae3f471a)
+
+```dbml
+Table users {
+  login varchar pk
+  password_hash varchar
+}
+
+Table projects {
+  id integer pk
+  name varchar
+  description text
+}
+
+Table documents {
+  id varchar pk // UUID for AWS later
+  project_id integer
+}
+
+Table permissions {
+  login varchar pk
+  project_id integer pk
+  permission varchar // used as string for simplicity 
+}
+
+Ref: documents.project_id > projects.id cascade
+Ref: permissions.login > users.login
+Ref: permissions.project_id > projects.id
+```
