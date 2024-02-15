@@ -98,7 +98,7 @@ Access model: Authorization via JWT, issued by POST /login. _JWT should last 1 h
 
 
 `POST /project/<project_id>/documents` - Upload document/documents for a specific project
-- Body: `file`
+- Body: `file: DOCX, PDF`
 - Access: PARTICIPANT, OWNER
 - Success: `201 { id: UUID }`
 - Failure:
@@ -109,7 +109,7 @@ Access model: Authorization via JWT, issued by POST /login. _JWT should last 1 h
 
 `GET /document/<document_id>` - Download document, if the user has access to the corresponding project
 - Access: PARTICIPANT, OWNER
-- Success: `file` 
+- Success: `file: DOCX, PDF` 
 - Failure:
 	- `403 {}` Permission denied
 	- `404 {}` Document was not found
@@ -117,7 +117,7 @@ Access model: Authorization via JWT, issued by POST /login. _JWT should last 1 h
 
 
 `PUT /document/<document_id>` - Update document
-- Body: `file`
+- Body: `file: DOCX, PDF`
 - Access: PARTICIPANT, OWNER
 - Success: `200 { id: UUID }`
 - Failure:
@@ -168,7 +168,7 @@ Programming language: `Python3.10`
 	- `FastAPI`
 	- `SQLAlchemy` + `alembic` for migrations
 - Linting:
-	- `ruff` <- flake8, black
+	- `ruff` <- `flake8, black`
 	- `mypy`
 - Testing:
 	- `pytest` + `httpx` for integration testing
@@ -194,7 +194,7 @@ Environment management:
 
 ```dbml
 Table users {
-  login varchar pk
+  login varchar pk // use as a PK for searching and indexing
   password_hash varchar
 }
 
@@ -202,6 +202,7 @@ Table projects {
   id integer pk
   name varchar
   description text
+  logo_id varchar // UUID for AWS later
 }
 
 Table documents {
@@ -212,10 +213,11 @@ Table documents {
 Table permissions {
   login varchar pk
   project_id integer pk
-  permission varchar // used as string for simplicity 
+  permission varchar // used as string for simplicity, less joins
 }
 
-Ref: documents.project_id > projects.id cascade
+Ref: documents.project_id > projects.id
 Ref: permissions.login > users.login
 Ref: permissions.project_id > projects.id
-```
+```	
+
