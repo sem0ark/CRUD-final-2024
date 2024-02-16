@@ -98,7 +98,6 @@ line-ending = "auto"
 
 
 # https://typethepipe.com/post/python-ruff-linter-code-formatter-rules/
-
 [tool.isort]
 # Black Compatibility
 profile = "black"

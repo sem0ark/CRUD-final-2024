@@ -1,4 +1,4 @@
-# EPAM AI-Driven XStack: Python/Cloud Final project
+# Python/Cloud Final project
 
 ## Description
 Theme: Project management/profiles dashboard - a service to  create, update, share, and delete projects information (logo, details, attached documents)
@@ -24,7 +24,7 @@ Access model: Authorization via JWT, issued by POST /login. _JWT should last 1 h
 
 #### Permissions
 
-`POST /auth { login: string, password: string }` - Create user (login, password, repeat password) 
+`POST /auth { login: string, password: string }` - Create user (login, password, repeat password)
 - Access: GUEST
 - Success: `200 { login: string }`
 - Failure:
@@ -109,7 +109,7 @@ Access model: Authorization via JWT, issued by POST /login. _JWT should last 1 h
 
 `GET /document/<document_id>` - Download document, if the user has access to the corresponding project
 - Access: PARTICIPANT, OWNER
-- Success: `file: DOCX, PDF` 
+- Success: `file: DOCX, PDF`
 - Failure:
 	- `403 {}` Permission denied
 	- `404 {}` Document was not found
@@ -219,5 +219,4 @@ Table permissions {
 Ref: documents.project_id > projects.id
 Ref: permissions.login > users.login
 Ref: permissions.project_id > projects.id
-```	
-
+```
