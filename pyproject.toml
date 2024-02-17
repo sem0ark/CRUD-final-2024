@@ -6,20 +6,29 @@ authors = ["sem0ark"]
 license = "MIT"
 readme = "README.md"
 
+
 [tool.poetry.dependencies]
 python = "^3.10"
 fastapi = "^0.109.2"
 sqlalchemy = "^2.0.27"
-pytest = "^8.0.0"
+uvicorn = "^0.27.1"
 pydantic = "^2.6.1"
+python-multipart = "^0.0.9"
+python-jose = {extras = ["cryptography"], version = "^3.3.0"}
+passlib = {extras = ["bcrypt"], version = "^1.7.4"}
+httpx = "^0.26.0"
+
 
 [tool.poetry.group.dev.dependencies]
 mypy = "^1.8.0"
+pytest = "^8.0.0"
+ruff = "^0.2.1"
+pytest-cov = "^4.1.0"
+pre-commit = "^3.6.1"
 
 [build-system]
 requires = ["poetry-core"]
 build-backend = "poetry.core.masonry.api"
-ruff = "^0.2.1"
 
 # https://laszlo.substack.com/p/cq4ds-python-project-from-scratch
 [tool.ruff]
@@ -72,7 +81,7 @@ select = [
   "ISC",   # flake8-implicit-str-concat
   "T20",   # flake8-print
 ]
-ignore = []
+ignore = ["ISC001"]
 
 # Allow fix for all enabled rules (when `--fix`) is provided.
 fixable = ["ALL"]
@@ -80,7 +89,6 @@ unfixable = []
 
 # Allow unused variables when underscore-prefixed.
 dummy-variable-rgx = "^(_+|(_+[a-zA-Z0-9_]*[a-zA-Z0-9]+?))$"
-
 
 
 [tool.ruff.format]
@@ -103,8 +111,9 @@ line-ending = "auto"
 profile = "black"
 
 [tool.mypy]
+strict = true
 python_version = "3.10"
 warn_return_any = true
 warn_unused_configs = true
-#ignore_missing_imports = true
+ignore_missing_imports = true
 exclude = ["nb"]
