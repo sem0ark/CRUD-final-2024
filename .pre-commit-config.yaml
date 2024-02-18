@@ -21,6 +21,6 @@ repos:
     hooks:
      - id: pytest
        name: pytest
-       entry: "poetry run pytest"
+       entry: "poetry run pytest --cov=src tests/"
        language: system
        types: [python]
