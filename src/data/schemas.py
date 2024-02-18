@@ -1,4 +1,4 @@
-from pydantic import BaseModel, Field
+from pydantic import BaseModel, ConfigDict, Field
 
 
 class DocumentCreate(BaseModel):
@@ -8,8 +8,10 @@ class DocumentCreate(BaseModel):
 class Document(DocumentCreate):
     id: str
 
-    class Config:
-        orm_mode = True
+    # class Config:
+    #     orm_mode = True
+    # replacement for pydantic 2
+    model_config = ConfigDict(from_attributes=True)
 
 
 class ProjectCreate(BaseModel):
@@ -25,8 +27,9 @@ class ProjectInfo(ProjectCreate):
 class Project(ProjectInfo):
     documents: list[Document]
 
-    class Config:
-        orm_mode = True
+    # class Config:
+    #     orm_mode = True
+    model_config = ConfigDict(from_attributes=True)
 
 
 class UserBase(BaseModel):
@@ -42,5 +45,6 @@ class UserCreate(UserBase):
 class User(UserBase):
     id: int
 
-    class Config:
-        orm_mode = True
+    # class Config:
+    #     orm_mode = True
+    model_config = ConfigDict(from_attributes=True)
