@@ -1,4 +1,8 @@
-from fastapi import APIRouter
+from data import crud, schemas
+from fastapi import APIRouter, Depends
+from sqlalchemy.orm import Session
+
+from .dependencies import get_db
 
 router = APIRouter(
     prefix="/project",
@@ -7,22 +11,11 @@ router = APIRouter(
 )
 
 
-fake_data = {
-    "projects": [
-        {
-            "id": 1,
-            "name": "test_data",
-            "description": "sample description",
-            "documents": [
-                "asd1",
-                "asd2",
-                "asd3",
-                "asd4",
-            ],
-        }
-    ]
-}
+@router.post("/", response_model=schemas.ProjectInfo)
+async def create_project(project: schemas.ProjectCreate, db: Session = Depends(get_db)):
+    return crud.create_project(db, project)
 
-# @router.get("/")
-# async def read_projects():
-#     return fake_data
+
+@router.get("/{project_id}", response_model=schemas.ProjectInfo)
+async def read_projects(project_id: int, db: Session = Depends(get_db)):
+    return crud.get_project(db, project_id)

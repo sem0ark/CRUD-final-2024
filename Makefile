@@ -1,14 +1,14 @@
 RUN = poetry run
 
 lint:
-	${RUN} ruff format ./src ./test
-	${RUN} ruff check --fix ./src ./test
-	${RUN} mypy ./src ./test
+	${RUN} ruff format ./src ./tests
+	${RUN} ruff check --fix ./src ./tests
+	${RUN} mypy ./src ./tests
 
 test:
 	${RUN} ruff check ./src --fix
-	${RUN} ruff check ./test --fix
-	${RUN} pytest
+	${RUN} ruff check ./tests --fix
+	${RUN} pytest --cov=src tests/
 
 dev:
 	${RUN} python ./src/main.py

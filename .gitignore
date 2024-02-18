@@ -143,6 +143,8 @@ venv.bak/
 .dmypy.json
 dmypy.json
 
+.ruff_chache
+
 # Pyre type checker
 .pyre/
 
@@ -162,3 +164,6 @@ cython_debug/
 
 # Docker data
 ./data
+
+# VS Code settings
+.vscode

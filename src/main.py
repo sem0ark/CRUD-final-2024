@@ -1,7 +1,14 @@
 import uvicorn
 from fastapi import FastAPI
 
+from src.data import database, models
+from src.routes import projects
+
+models.Base.metadata.create_all(bind=database.engine)
+
 app = FastAPI()
+
+app.include_router(projects.router)
 
 
 @app.get("/test")

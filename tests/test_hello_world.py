@@ -1,6 +1,11 @@
-from unittest import TestCase
+from fastapi.testclient import TestClient
+
+from src.main import app
+
+client = TestClient(app)
 
 
-class TestHelloWorld(TestCase):
-    def test_upper(self) -> None:
-        self.assertEqual("hello world!".upper(), "HELLO WORLD!")
+def test_health():
+    response = client.get("/test")
+    assert response.status_code == 200
+    assert response == "Success"
