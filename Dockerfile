@@ -34,6 +34,7 @@ USER app
 
 
 # Creating folders, and files for a project:
-COPY . /code
+COPY ./src /code
+WORKDIR /code
 
-CMD ["poetry", "run", "python", "/code/src/main.py"]
+CMD ["poetry", "run", "python", "-m", "src.main"]

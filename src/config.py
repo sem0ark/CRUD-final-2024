@@ -10,6 +10,8 @@ __postgres_host = "localhost"
 SQLALCHEMY_DATABASE_URL: str = f"postgresql+psycopg2://{__postgres_user}:{__postgres_password}\
 @{__postgres_host}:{__postgres_port}/db"
 
-SECRET_KEY = os.environ.get("SECRET_KEY", "1234")
+SECRET_KEY = os.environ.get(
+    "SECRET_KEY", "f939271c362c032d65dc2668b134c399b129ec54a826f4ffd9a26ebaad83213"
+)
 ALGORITHM = "HS256"
 ACCESS_TOKEN_EXPIRE_MINUTES = 60

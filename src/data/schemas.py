@@ -8,10 +8,8 @@ class DocumentCreate(BaseModel):
 class Document(DocumentCreate):
     id: str
 
-    # class Config:
-    #     orm_mode = True
-    # replacement for pydantic 2
     model_config = ConfigDict(from_attributes=True)
+    # replacement for pydantic 2, see documentation on ConfigDict
 
 
 class ProjectCreate(BaseModel):
@@ -27,9 +25,11 @@ class ProjectInfo(ProjectCreate):
 class Project(ProjectInfo):
     documents: list[Document]
 
-    # class Config:
-    #     orm_mode = True
     model_config = ConfigDict(from_attributes=True)
+
+
+class ProjectListing(BaseModel):
+    projects: list[Project]
 
 
 class UserBase(BaseModel):
@@ -45,6 +45,15 @@ class UserCreate(UserBase):
 class User(UserBase):
     id: int
 
-    # class Config:
-    #     orm_mode = True
     model_config = ConfigDict(from_attributes=True)
+
+
+class Token(BaseModel):
+    access_token: str
+    token_type: str
+
+
+class TokenData(BaseModel):
+    user_id: int
+    # used ID compared to login to later query premissions association
+    #   directly, compared to first finding user
