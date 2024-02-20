@@ -37,6 +37,23 @@ def delete_project(db: Session, project_id: int) -> None:
     db.delete(db_project)
 
 
+def grant_access_to_user(db: Session, project: models.Project, user: models.User):
+    log.debug(
+        f"Giving user[{user.id}, {user.login}] \
+access to project [{project.id}, {project.name}]"
+    )
+    try:
+        a = models.Permission(permission=types.PermissionType.participant.value)
+        a.user = user
+        project.users.append(a)
+        db.commit()
+        db.refresh(project)
+    except IntegrityError:
+        db.rollback()
+        return None
+    return project
+
+
 def create_project(db: Session, project: schemas.ProjectCreate, owner: models.User):
     log.debug(
         f"Creating a project with values: \
