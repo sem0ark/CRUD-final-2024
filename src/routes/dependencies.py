@@ -5,6 +5,7 @@ from jose import JWTError, jwt
 from sqlalchemy.orm import Session
 
 from ..config import ALGORITHM, SECRET_KEY
+from ..data import models
 from ..data.crud import get_project_role, get_user
 from ..data.database import SessionLocal
 from ..data.schemas import TokenData
@@ -27,7 +28,7 @@ def get_db():
 # placed here due to cyclic dependency on get_db
 def get_current_user(
     token: Annotated[str, Depends(oauth2_scheme)], db: Session = Depends(get_db)
-):
+) -> models.User:
     credentials_exception = HTTPException(
         status_code=status.HTTP_401_UNAUTHORIZED,
         detail="Could not validate credentials",
@@ -67,28 +68,28 @@ def project_role(
     project_id: int,
     db: Session = Depends(get_db),
     current_user=Depends(get_current_user),
-):
+) -> models.Permission:
     project_role = get_project_role(db, project_id, current_user.id)
     if not project_role:
         raise HTTPException(
             status_code=status.HTTP_401_UNAUTHORIZED,
-            detail="Could not validate credentials",
+            detail="You don't have access to the project",
             headers={"WWW-Authenticate": "Bearer"},
         )
 
     return project_role
 
 
-def is_owner(project_role: PermissionType = Depends(project_role)):
-    if project_role != PermissionType.owner:
+def is_owner(project_role: models.Permission = Depends(project_role)) -> bool:
+    if project_role.permission != PermissionType.owner.value:
         raise HTTPException(
             status_code=status.HTTP_401_UNAUTHORIZED,
-            detail="Could not validate credentials",
+            detail="You are not the project owner",
             headers={"WWW-Authenticate": "Bearer"},
         )
     return True
 
 
 # implemented for readability
-def is_participant(_project_role: PermissionType = Depends(project_role)):
+def is_participant(_project_role: PermissionType = Depends(project_role)) -> bool:
     return True

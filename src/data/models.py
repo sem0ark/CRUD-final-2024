@@ -45,7 +45,7 @@ class Permission(Base):
     user_id = mapped_column(Integer, ForeignKey("users.id"), primary_key=True)
     project_id = mapped_column(Integer, ForeignKey("projects.id"), primary_key=True)
 
-    permission = mapped_column(String(length=40))
+    permission: Mapped[str] = mapped_column(String(length=40))
     # permission is only a name (e.g. OWNER, PARTICIPANT), so it should be short
     # Implemented as a string if later additional roles appear
 

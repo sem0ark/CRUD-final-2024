@@ -1,7 +1,10 @@
 from sqlalchemy.exc import IntegrityError
 from sqlalchemy.orm import Session
 
+from ..utils.logs import getLogger
 from . import models, schemas, types
+
+log = getLogger()
 
 
 def get_user(db: Session, user_id: int) -> models.User | None:
@@ -35,14 +38,21 @@ def delete_project(db: Session, project_id: int) -> None:
 
 
 def create_project(db: Session, project: schemas.ProjectCreate, owner: models.User):
+    log.debug(
+        f"Creating a project with values: \
+name='{project.name}', description='{project.description}'"
+    )
     db_project = models.Project(**project.model_dump())
     db.add(db_project)
-    db.commit()
-    db.refresh(db_project)
 
-    a = models.Permission(permission=types.PermissionType.owner)
+    log.debug(
+        f"Adding the creator to the project: login='{owner.login}', id='{owner.id}'"
+    )
+    a = models.Permission(permission=types.PermissionType.owner.value)
     a.user = owner
     db_project.users.append(a)
+    db.commit()
+    db.refresh(db_project)
     return db_project
 
 
@@ -57,11 +67,14 @@ def create_document(db: Session, document: schemas.Document, project: models.Pro
 
 def get_project_role(
     db: Session, project_id: int, user_id: int
-) -> types.PermissionType | None:
-    return db.query(models.Permission).get((user_id, project_id))
+) -> models.Permission | None:
+    return db.query(models.Permission).get(
+        {"user_id": user_id, "project_id": project_id}
+    )
 
 
 def get_accessible_projects(db: Session, user_id: int) -> list[models.Project] | None:
+    log.debug(f"Finding accessible projects from user: id='{user_id}'")
     user = get_user(db, user_id)
     if not user:
         return None
