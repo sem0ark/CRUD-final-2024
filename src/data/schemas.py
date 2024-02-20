@@ -42,6 +42,10 @@ class UserCreate(UserBase):
     )
 
 
+class UserDB(UserBase):
+    hashed_password: str
+
+
 class User(UserBase):
     id: int
 
@@ -54,6 +58,7 @@ class Token(BaseModel):
 
 
 class TokenData(BaseModel):
-    user_id: int
+    user_id: str
     # used ID compared to login to later query premissions association
     #   directly, compared to first finding user
+    # failed to use user_id directly, because it requires to have string value

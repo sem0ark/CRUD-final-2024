@@ -9,7 +9,10 @@ from ..data.crud import get_project_role, get_user
 from ..data.database import SessionLocal
 from ..data.schemas import TokenData
 from ..data.types import PermissionType
+from ..utils.logs import getLogger
 from .auth import oauth2_scheme
+
+log = getLogger()
 
 
 def get_db():
@@ -32,18 +35,24 @@ def get_current_user(
     )
 
     try:
+        log.debug(f"Trying to process token '{token}'")
         payload = jwt.decode(token, SECRET_KEY, algorithms=[ALGORITHM])
+        log.debug(f"Received payload '{payload}' from the token")
+
         user_id = payload.get("sub")
         if user_id is None:
             raise credentials_exception
 
         token_data = TokenData(user_id=user_id)
-    except JWTError:
+    except JWTError as e:
+        log.debug(e)
         raise credentials_exception from None
         # B904 raise exceptions with `raise ... from None`
         # to distinguish them from errors in exception handlin
 
-    user = get_user(db, token_data.user_id)
+    user = get_user(
+        db, int(token_data.user_id)
+    )  # because bcrypt requires string subject
     if user is None:
         raise credentials_exception
 

@@ -12,9 +12,8 @@ def get_user_by_login(db: Session, login: str) -> models.User | None:
     return db.query(models.User).filter(models.User.login == login).first()
 
 
-def create_user(db: Session, user: schemas.UserCreate) -> models.User | None:
-    hashed_password = user.password
-    db_user = models.User(login=user.login, hashed_password=hashed_password)
+def create_user(db: Session, user: schemas.UserDB) -> models.User | None:
+    db_user = models.User(login=user.login, hashed_password=user.hashed_password)
     db.add(db_user)
     try:
         db.commit()
