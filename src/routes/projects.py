@@ -37,28 +37,10 @@ async def read_projects(
             status_code=status.HTTP_403_FORBIDDEN, detail="Not authorized"
         )
 
-    return [
-        schemas.ProjectInfo(
-            id=p.id,
-            name=p.name,
-            description=p.description,
-            logo_id=p.logo_id,
-        )
-        for p in accessible_projects
-    ]
+    return list(map(render_project_info, accessible_projects))
 
 
-@router.get(
-    "/{project_id}",
-    response_model=schemas.Project,
-    dependencies=[Depends(dep.is_project_participant)],
-)
-async def read_project(project_id: int, db: Session = Depends(dep.get_db)):
-    db_project = crud.get_project(db, project_id)
-    if not db_project:
-        raise HTTPException(
-            status_code=status.HTTP_404_NOT_FOUND, detail="Project not found"
-        )
+def render_project(db_project: models.Project) -> schemas.Project:
     project_documents = list(db_project.documents) if db_project.documents else []
 
     return schemas.Project(
@@ -68,6 +50,56 @@ async def read_project(project_id: int, db: Session = Depends(dep.get_db)):
         logo_id=db_project.logo_id,
         documents=project_documents,
     )
+
+
+# TODO: search for a better solution of
+#   transforming SQLAlchemy model into Pydantic schema
+def render_project_info(db_project: models.Project) -> schemas.ProjectInfo:
+    return schemas.ProjectInfo(
+        id=db_project.id,
+        name=db_project.name,
+        description=db_project.description,
+        logo_id=db_project.logo_id,
+    )
+
+
+@router.get(
+    "/{project_id}",
+    response_model=schemas.Project,
+    dependencies=[Depends(dep.is_project_participant)],
+)
+async def read_project(
+    project_id: int,
+    db_project=Depends(dep.get_project_by_id),
+):
+    return render_project(db_project)
+
+
+# making an alias depending on the user's preferences
+@router.patch(
+    "/{project_id}",
+    response_model=schemas.Project,
+    dependencies=[Depends(dep.is_project_participant)],
+)
+@router.put(
+    "/{project_id}",
+    response_model=schemas.Project,
+    dependencies=[Depends(dep.is_project_participant)],
+)
+async def update_project(
+    project: schemas.ProjectUpdate,
+    project_id: int,
+    db: Session = Depends(dep.get_db),
+    db_project=Depends(dep.get_project_by_id),
+):
+    updated = crud.update_project(db, db_project, project)
+    if updated is None:
+        raise HTTPException(
+            status.HTTP_500_INTERNAL_SERVER_ERROR,
+            detail="Could not update the project",
+        )
+
+    return render_project(updated)
 
 
 @router.post("/{project_id}/invite", dependencies=[Depends(dep.is_project_owner)])

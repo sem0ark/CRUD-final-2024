@@ -32,6 +32,21 @@ def get_project(db: Session, project_id: int) -> models.Project | None:
     return db.query(models.Project).get(project_id)
 
 
+def update_project(
+    db: Session, db_project: models.Project, update_data: schemas.ProjectUpdate
+) -> models.Project | None:
+    # TODO: refactor, search for a better solution, because .update(dict) doesn't work
+    if update_data.name is not None:
+        db_project.name = update_data.name
+
+    if update_data.description is not None:
+        db_project.description = update_data.description
+
+    db.commit()
+    db.refresh(db_project)
+    return db_project
+
+
 def delete_project(db: Session, project_id: int) -> None:
     db_project = get_project(db, project_id)
     db.delete(db_project)

@@ -17,6 +17,11 @@ class ProjectCreate(BaseModel):
     description: str = ""
 
 
+class ProjectUpdate(BaseModel):
+    name: str | None = Field(max_length=200, default=None)
+    description: str | None = None
+
+
 class ProjectInfo(ProjectCreate):
     id: int
     logo_id: str | None
