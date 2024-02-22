@@ -57,13 +57,13 @@ Access model: Authorization via JWT, issued by POST /login. _JWT should last 1 h
 
 `GET /projects` - Get all projects, _accessible for a user_
 - Access: USER
-- Success: `200 { projects: []{ name: string, id: UUID, description: string, documents: []UUID }}`
+- Success: `200 []{ name: string, id: UUID, description: string }`
 - Failure:
 	- `403 {}` Permission denied
 
 `GET /project/<project_id>/info` - Return project's details
 - Access: PARTICIPANT, OWNER
-- Success: `200 { id: UUID, name: string, description: name }`
+- Success: `200 { id: UUID, name: string, description: name, documents: []UUID }`
 - Failure:
 	- `403 {}` Permission denied
 	- `404 {}` Project was not found
@@ -71,7 +71,7 @@ Access model: Authorization via JWT, issued by POST /login. _JWT should last 1 h
 
 `PUT /project/<project_id>/info { name?: string, description?: string }` - Update projects details.
 - Access: PARTICIPANT, OWNER
-- Success: `200 { id: UUID, name: string, description: name }`
+- Success: `200 { id: UUID, name: string, description: name, documents: []UUID }`
 - Failure:
 	- `403 {}` Permission denied
 	- `404 {}` Project was not found
@@ -152,7 +152,7 @@ Access model: Authorization via JWT, issued by POST /login. _JWT should last 1 h
 
 `DELETE /project/<project_id>/logo` - Delete project's logo.
 - Success: `204 {}`
-- Access: PARTICIPANT
+- Access: OWNER
 - Failure:
 	- `403 {}` Permission denied
 	- `404 {}` Document was not found
