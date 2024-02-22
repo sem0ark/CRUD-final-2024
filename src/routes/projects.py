@@ -102,7 +102,20 @@ async def update_project(
     return render_project(updated)
 
 
-@router.post("/{project_id}/invite", dependencies=[Depends(dep.is_project_owner)])
+@router.delete(
+    "/{project_id}",
+    dependencies=[Depends(dep.is_project_owner), Depends(dep.get_project_by_id)],
+    status_code=status.HTTP_204_NO_CONTENT,
+)
+async def delete_project(project_id: int, db: Session = Depends(dep.get_db)):
+    crud.delete_project(db, project_id)
+
+
+@router.post(
+    "/{project_id}/invite",
+    dependencies=[Depends(dep.is_project_owner)],
+    status_code=status.HTTP_201_CREATED,
+)
 async def grant_project_access(
     login: Annotated[
         str, Query()
