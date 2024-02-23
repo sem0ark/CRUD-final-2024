@@ -1,10 +1,11 @@
+from logging import getLogger
+
 from fastapi import APIRouter, Depends, UploadFile, status
 from fastapi.responses import FileResponse
 
 from ..data import crud, models, schemas
 from ..services import file_service
 from ..utils import renders
-from ..utils.logs import getLogger
 from . import dependencies as dep
 
 router = APIRouter(

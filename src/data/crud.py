@@ -1,9 +1,9 @@
+from logging import getLogger
 from uuid import uuid4
 
 from sqlalchemy.exc import IntegrityError
 from sqlalchemy.orm import Session
 
-from ..utils.logs import getLogger
 from . import models, schemas, types
 
 log = getLogger()

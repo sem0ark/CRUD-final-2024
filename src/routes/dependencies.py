@@ -1,3 +1,4 @@
+from logging import getLogger
 from typing import Annotated
 
 from fastapi import Depends, HTTPException, UploadFile, status
@@ -16,7 +17,6 @@ from ..data import crud, models
 from ..data.database import SessionLocal
 from ..data.schemas import TokenData
 from ..data.types import PermissionType
-from ..utils.logs import getLogger
 from .auth import oauth2_scheme
 
 log = getLogger()
@@ -73,9 +73,15 @@ def get_current_user(
 def project_role(
     project_id: int,
     db: Session = Depends(get_db),
-    current_user=Depends(get_current_user),
+    current_user: models.User = Depends(get_current_user),
 ) -> models.Permission:
     project_role = crud.get_project_role(db, project_id, current_user.id)
+
+    log.debug(
+        f"Received project role {project_role} \
+for user {current_user.login} on project id {project_id}"
+    )
+
     if not project_role:
         raise HTTPException(
             status_code=status.HTTP_401_UNAUTHORIZED,
@@ -87,7 +93,10 @@ def project_role(
 
 
 def is_project_owner(project_role: models.Permission = Depends(project_role)) -> bool:
+    log.debug("User is trying to access owner-role action")
+
     if project_role.permission != PermissionType.owner.value:
+        log.debug("User failed to access owner-role action")
         raise HTTPException(
             status_code=status.HTTP_401_UNAUTHORIZED,
             detail="You are not the project owner",

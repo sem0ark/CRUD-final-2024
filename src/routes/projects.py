@@ -1,3 +1,4 @@
+from logging import getLogger
 from typing import Annotated
 
 from fastapi import APIRouter, Depends, HTTPException, Query, status
@@ -5,7 +6,6 @@ from sqlalchemy.orm import Session
 
 from ..data import crud, models, schemas
 from ..utils import renders
-from ..utils.logs import getLogger
 from . import dependencies as dep
 
 router = APIRouter(
