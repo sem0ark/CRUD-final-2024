@@ -15,3 +15,6 @@ SECRET_KEY = os.environ.get(
 )
 ALGORITHM = "HS256"
 ACCESS_TOKEN_EXPIRE_MINUTES = 60
+
+DOCUMENT_FOLDER = os.path.join(os.getcwd(), "files", "documents")
+LOGO_FOLDER = os.path.join(os.getcwd(), "files", "logos")
