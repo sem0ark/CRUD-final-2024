@@ -1,19 +1,16 @@
-from logging import getLogger
-
 from fastapi import APIRouter, Depends, UploadFile, status
 from fastapi.responses import FileResponse
 
 from ..data import crud, models, schemas
 from ..services import file_service
 from ..utils import renders
+from ..utils.logs import log
 from . import dependencies as dep
 
 router = APIRouter(
     # dependencies=[Depends(get_token_header)],
     responses={404: {"description": "Not found"}},
 )
-
-log = getLogger()
 
 
 @router.get(

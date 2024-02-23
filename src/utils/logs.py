@@ -1,6 +1,9 @@
+import logging
 from logging.config import dictConfig
 
 from asgi_correlation_id import CorrelationIdFilter
+
+log = logging.getLogger("app")
 
 
 def configure_logging() -> None:
@@ -9,7 +12,7 @@ def configure_logging() -> None:
             "version": 1,
             "disable_existing_loggers": False,
             "filters": {
-                "correlation_id": {"()": CorrelationIdFilter(uuid_length=32)},
+                "correlation_id": {"()": CorrelationIdFilter},
             },
             "formatters": {
                 "console": {

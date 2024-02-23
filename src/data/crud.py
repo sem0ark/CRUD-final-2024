@@ -1,12 +1,10 @@
-from logging import getLogger
 from uuid import uuid4
 
 from sqlalchemy.exc import IntegrityError
 from sqlalchemy.orm import Session
 
+from ..utils.logs import log
 from . import models, schemas, types
-
-log = getLogger()
 
 
 def get_user(db: Session, user_id: int) -> models.User | None:

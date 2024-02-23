@@ -1,4 +1,3 @@
-from logging import getLogger
 from typing import Annotated
 
 from fastapi import Depends, HTTPException, UploadFile, status
@@ -17,9 +16,8 @@ from ..data import crud, models
 from ..data.database import SessionLocal
 from ..data.schemas import TokenData
 from ..data.types import PermissionType
+from ..utils.logs import log
 from .auth import oauth2_scheme
-
-log = getLogger()
 
 
 def get_db():

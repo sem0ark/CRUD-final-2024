@@ -1,5 +1,4 @@
 from datetime import datetime, timedelta, timezone
-from logging import getLogger
 from typing import Any
 
 from fastapi.security import OAuth2PasswordBearer
@@ -9,8 +8,8 @@ from sqlalchemy.orm import Session
 
 from ..config import ALGORITHM, SECRET_KEY
 from ..data import crud
+from ..utils.logs import log
 
-log = getLogger()
 pwd_context = CryptContext(schemes=["bcrypt"])
 oauth2_scheme = OAuth2PasswordBearer(tokenUrl="login_form")
 

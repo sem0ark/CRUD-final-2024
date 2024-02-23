@@ -1,4 +1,3 @@
-from logging import getLogger
 from typing import Annotated
 
 from fastapi import APIRouter, Depends, HTTPException, Query, status
@@ -13,8 +12,6 @@ router = APIRouter(
     # dependencies=[Depends(get_token_header)],
     responses={404: {"description": "Not found"}},
 )
-
-log = getLogger()
 
 
 @router.post(
