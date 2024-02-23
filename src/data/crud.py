@@ -1,3 +1,5 @@
+from uuid import uuid4
+
 from sqlalchemy.exc import IntegrityError
 from sqlalchemy.orm import Session
 
@@ -88,15 +90,6 @@ name='{project.name}', description='{project.description}'"
     return db_project
 
 
-def create_document(db: Session, document: schemas.Document, project: models.Project):
-    db_document = models.Document(**document.model_dump())
-    db_document.project = project
-    db.add(db_document)
-    db.commit()
-    db.refresh(db_document)
-    return db_document
-
-
 def get_project_role(
     db: Session, project_id: int, user_id: int
 ) -> models.Permission | None:
@@ -112,3 +105,43 @@ def get_accessible_projects(db: Session, user_id: int) -> list[models.Project] |
         return None
 
     return [assoc.project for assoc in user.projects]
+
+
+def get_document_by_id(db: Session, document_id: str) -> models.Document | None:
+    return db.query(models.Document).get(document_id)
+
+
+def get_project_by_document_id(db: Session, document_id: str) -> models.Project | None:
+    db_document = get_document_by_id(db, document_id)
+    if not db_document:
+        return None
+    return db_document.project
+
+
+def get_project_id_by_document_id(db: Session, document_id: str) -> int | None:
+    project = get_project_by_document_id(db, document_id)
+    if not project:
+        return None
+    return project.id
+
+
+def create_document(
+    db: Session, project: models.Project, filename: str | None
+) -> models.Document:
+    db_document = models.Document(id=uuid4(), name=filename)
+
+    db.add(db_document)
+    project.documents.append(db_document)
+    db.commit()
+    db.refresh(db_document)
+    return db_document
+
+
+def update_document(
+    db: Session, db_document: models.Document, filename: str
+) -> models.Document:
+    db_document = models.Document(id=uuid4(), name=filename)
+    db_document.name = filename
+    db.commit()
+    db.refresh(db_document)
+    return db_document

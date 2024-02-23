@@ -1,10 +1,17 @@
 from typing import Annotated
 
-from fastapi import Depends, HTTPException, status
+from fastapi import Depends, HTTPException, UploadFile, status
 from jose import JWTError, jwt
 from sqlalchemy.orm import Session
 
-from ..config import ALGORITHM, SECRET_KEY
+from ..config import (
+    ALGORITHM,
+    ALLOWED_DOCUMENT_EXTENCIONS,
+    ALLOWED_DOCUMENT_MIME_TYPES,
+    ALLOWED_LOGO_EXTENCIONS,
+    ALLOWED_LOGO_MIME_TYPES,
+    SECRET_KEY,
+)
 from ..data import crud, models
 from ..data.database import SessionLocal
 from ..data.schemas import TokenData
@@ -112,3 +119,43 @@ def get_user_by_login(login: str, db: Session = Depends(get_db)) -> models.User:
             status_code=status.HTTP_404_NOT_FOUND, detail="User not found"
         )
     return db_user
+
+
+def get_project_id_by_document_id(document_id: str, db=Depends(get_db)):
+    project_id = crud.get_project_id_by_document_id(db, document_id)
+    if not project_id:
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND, detail="Project not found"
+        )
+    return project_id
+
+
+def get_document_id(document_id: str, db=Depends(get_db)):
+    db_document = crud.get_document_by_id(db, document_id)
+    if not db_document:
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND, detail="Document not found"
+        )
+    return db_document
+
+
+# https://fastapi.tiangolo.com/advanced/advanced-dependencies/#create-an-instance
+
+
+class MIMETypeChecker:
+    def __init__(self, allowed_mime, allowed_extencions):
+        self.allowed_mime = allowed_mime
+        self.allowed_extencions = allowed_extencions
+
+    def __call__(self, file: UploadFile):
+        if file.content_type in self.allowed_mime:
+            return True
+
+        raise HTTPException(
+            status_code=status.HTTP_422_UNPROCESSABLE_ENTITY,
+            detail=f"Allowed file formats are: {', '.join(self.allowed_extencions)}",
+        )
+
+
+is_document = MIMETypeChecker(ALLOWED_DOCUMENT_MIME_TYPES, ALLOWED_DOCUMENT_EXTENCIONS)
+is_logo = MIMETypeChecker(ALLOWED_LOGO_MIME_TYPES, ALLOWED_LOGO_EXTENCIONS)

@@ -7,10 +7,10 @@ from .database import Base
 class Project(Base):
     __tablename__ = "projects"
 
-    id = mapped_column(Integer, primary_key=True)
-    name = mapped_column(String(length=255))
-    description = mapped_column(Text, default="")
-    logo_id = mapped_column(String(length=255))
+    id: Mapped[int] = mapped_column(Integer, primary_key=True)
+    name: Mapped[str] = mapped_column(String(length=255))
+    description: Mapped[str] = mapped_column(Text, default="")
+    logo_id: Mapped[str] = mapped_column(String(length=255))
 
     documents: Mapped["Document"] = relationship(back_populates="project")
     users: Mapped[list["Permission"]] = relationship(back_populates="project")
@@ -19,9 +19,9 @@ class Project(Base):
 class User(Base):
     __tablename__ = "users"
 
-    id = mapped_column(Integer, primary_key=True)
-    login = mapped_column(String(length=255), unique=True, index=True)
-    hashed_password = mapped_column(String(length=100))
+    id: Mapped[int] = mapped_column(Integer, primary_key=True)
+    login: Mapped[str] = mapped_column(String(length=255), unique=True, index=True)
+    hashed_password: Mapped[str] = mapped_column(String(length=100))
 
     projects: Mapped[list["Permission"]] = relationship(back_populates="user")
 
@@ -29,10 +29,10 @@ class User(Base):
 class Document(Base):
     __tablename__ = "documents"
 
-    id = mapped_column(String(length=255), primary_key=True)
-    name = mapped_column(String(length=255), index=True)
+    id: Mapped[str] = mapped_column(String(length=255), primary_key=True)
+    name: Mapped[str] = mapped_column(String(length=255), index=True)
 
-    project_id = mapped_column(Integer, ForeignKey("projects.id"))
+    project_id: Mapped[int] = mapped_column(Integer, ForeignKey("projects.id"))
 
     project: Mapped["Project"] = relationship(back_populates="documents")
 

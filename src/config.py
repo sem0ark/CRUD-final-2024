@@ -16,5 +16,24 @@ SECRET_KEY = os.environ.get(
 ALGORITHM = "HS256"
 ACCESS_TOKEN_EXPIRE_MINUTES = 60
 
-DOCUMENT_FOLDER = os.path.join(os.getcwd(), "files", "documents")
-LOGO_FOLDER = os.path.join(os.getcwd(), "files", "logos")
+DOCUMENT_FOLDER = os.path.join(os.getcwd(), "..", "files", "documents")
+LOGO_FOLDER = os.path.join(os.getcwd(), "..", "files", "logos")
+
+
+ALLOWED_DOCUMENT_MIME_TYPES = [
+    "application/pdf",  # .pdf
+    "application/msword"  # .doc
+    "application/vnd.openxmlformats-officedocument.wordprocessingml.document",  # .docx
+]
+
+ALLOWED_DOCUMENT_EXTENCIONS = [".docx", ".doc", ".pdf"]
+
+ALLOWED_LOGO_MIME_TYPES = [
+    "image/png",  # .png
+    "image/jpeg",  # .jpg .jpeg
+]
+
+ALLOWED_LOGO_EXTENCIONS = [".png", ".jpg", ".jpeg"]
+
+# later change all incoming logos to size x size square JPG images to save space
+LOGO_SIZE = 400
