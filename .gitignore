@@ -167,3 +167,8 @@ cython_debug/
 
 # VS Code settings
 .vscode
+
+
+# static files data
+/files/documents/**
+/files/logos/**

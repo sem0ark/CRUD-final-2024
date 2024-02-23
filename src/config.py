@@ -1,23 +1,34 @@
 import os
+import pathlib
 
-# TODO: Remove development credentials
-__postgres_user = os.environ.get("POSTGRES_USER", "dev")
-__postgres_password = os.environ.get("POSTGRES_PASSWORD", "dev")
-__postgres_port = 5432
-__postgres_host = "localhost"
+from dotenv import load_dotenv
+
+# load information into environment variables
+# TODO: move configuration to Docker Secrets
+load_dotenv()
+
+# used direct access, so in case env variable is not available, throw an error
+__postgres_user = os.environ["POSTGRES_USER"]
+__postgres_password = os.environ["POSTGRES_PASSWORD"]
+__postgres_port = os.environ["POSTGRES_PORT"]
+__postgres_host = os.environ["POSTGRES_HOST"]
+
 
 # "postgres+psycopg2://<USERNAME>:<PASSWORD>@<IP_ADDRESS>:<PORT>/<DATABASE_NAME>"
 SQLALCHEMY_DATABASE_URL: str = f"postgresql+psycopg2://{__postgres_user}:{__postgres_password}\
 @{__postgres_host}:{__postgres_port}/db"
 
-SECRET_KEY = os.environ.get(
-    "SECRET_KEY", "f939271c362c032d65dc2668b134c399b129ec54a826f4ffd9a26ebaad83213"
-)
-ALGORITHM = "HS256"
+SECRET_KEY = os.environ["SECRET_KEY"]
+ALGORITHM = os.environ["ALGORITHM"]
 ACCESS_TOKEN_EXPIRE_MINUTES = 60
 
-DOCUMENT_FOLDER = os.path.join(os.getcwd(), "..", "files", "documents")
-LOGO_FOLDER = os.path.join(os.getcwd(), "..", "files", "logos")
+# we direct to folders from the config location
+DOCUMENT_FOLDER = os.path.join(
+    pathlib.Path(__file__).parent.resolve(), "..", "files", "documents"
+)
+LOGO_FOLDER = os.path.join(
+    pathlib.Path(__file__).parent.resolve(), "..", "files", "logos"
+)
 
 
 ALLOWED_DOCUMENT_MIME_TYPES = [
@@ -35,5 +46,5 @@ ALLOWED_LOGO_MIME_TYPES = [
 
 ALLOWED_LOGO_EXTENCIONS = [".png", ".jpg", ".jpeg"]
 
-# later change all incoming logos to size x size square JPG images to save space
+# later change all incoming logos to "size x size" square JPG images to save space
 LOGO_SIZE = 400
