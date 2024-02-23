@@ -128,10 +128,8 @@ def get_project_id_by_document_id(db: Session, document_id: str) -> int | None:
 def create_document(
     db: Session, project: models.Project, filename: str | None
 ) -> models.Document:
-    db_document = models.Document(id=uuid4(), name=filename)
-
+    db_document = models.Document(id=str(uuid4()), name=filename, project=project)
     db.add(db_document)
-    project.documents.append(db_document)
     db.commit()
     db.refresh(db_document)
     return db_document
@@ -140,7 +138,6 @@ def create_document(
 def update_document(
     db: Session, db_document: models.Document, filename: str
 ) -> models.Document:
-    db_document = models.Document(id=uuid4(), name=filename)
     db_document.name = filename
     db.commit()
     db.refresh(db_document)

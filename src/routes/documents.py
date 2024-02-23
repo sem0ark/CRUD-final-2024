@@ -3,6 +3,7 @@ from fastapi.responses import FileResponse
 
 from ..data import crud, models, schemas
 from ..services import file_service
+from ..utils import renders
 from ..utils.logs import getLogger
 from . import dependencies as dep
 
@@ -22,7 +23,12 @@ log = getLogger()
 def get_available_documents(
     project_id: int, project: models.Project = Depends(dep.get_project_by_id)
 ):
-    return list(project.documents)
+    if not project.documents:
+        return []
+
+    log.debug(f"Received available documents {project.documents}")
+
+    return list(map(renders.render_document, project.documents))
 
 
 @router.post(
@@ -34,20 +40,22 @@ def get_available_documents(
 def upload_document(
     file: UploadFile, db=Depends(dep.get_db), project=Depends(dep.get_project_by_id)
 ):
-    file_name = file.filename
-    # filename can be None, so replace with default value
+    # filename can be None, so replace with default value of document's ID
+    db_document = crud.create_document(db, project, file.filename)
+    file_service.save_document(file, db_document.id)
 
-    db_document = crud.create_document(db, project, file_name)
     return db_document
 
 
 @router.get(
     "/document/{document_id}",
-    dependencies=[Depends(dep.get_document_id), Depends(dep.is_project_participant)],
+    dependencies=[
+        Depends(dep.get_document_by_id),
+        Depends(dep.get_project_id_by_document_id),
+        Depends(dep.is_project_participant),
+    ],
 )
-def download_document(
-    document_id: str, project_id=Depends(dep.get_project_id_by_document_id)
-):
+def download_document(document_id: str):
     return FileResponse(file_service.get_document(document_id))
 
 
@@ -58,7 +66,7 @@ def download_document(
 def reupload_document(
     document_id: str,
     file: UploadFile,
-    document: models.Document = Depends(dep.get_document_id),
+    document: models.Document = Depends(dep.get_document_by_id),
     db=Depends(dep.get_db),
 ):
     file_name = file.filename
@@ -66,6 +74,9 @@ def reupload_document(
         file_name = document.name
 
     db_document = crud.update_document(db, document, file_name)
+    file_service.delete_document_by_id(db_document.id)
+    file_service.save_document(file, db_document.id)
+
     return db_document
 
 

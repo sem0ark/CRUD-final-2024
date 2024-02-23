@@ -130,7 +130,7 @@ def get_project_id_by_document_id(document_id: str, db=Depends(get_db)):
     return project_id
 
 
-def get_document_id(document_id: str, db=Depends(get_db)):
+def get_document_by_id(document_id: str, db=Depends(get_db)):
     db_document = crud.get_document_by_id(db, document_id)
     if not db_document:
         raise HTTPException(

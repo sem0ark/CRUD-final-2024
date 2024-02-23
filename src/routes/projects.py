@@ -4,6 +4,7 @@ from fastapi import APIRouter, Depends, HTTPException, Query, status
 from sqlalchemy.orm import Session
 
 from ..data import crud, models, schemas
+from ..utils import renders
 from ..utils.logs import getLogger
 from . import dependencies as dep
 
@@ -37,30 +38,7 @@ async def read_projects(
             status_code=status.HTTP_403_FORBIDDEN, detail="Not authorized"
         )
 
-    return list(map(render_project_info, accessible_projects))
-
-
-def render_project(db_project: models.Project) -> schemas.Project:
-    project_documents = list(db_project.documents) if db_project.documents else []
-
-    return schemas.Project(
-        id=db_project.id,
-        name=db_project.name,
-        description=db_project.description,
-        logo_id=db_project.logo_id,
-        documents=project_documents,
-    )
-
-
-# TODO: search for a better solution of
-#   transforming SQLAlchemy model into Pydantic schema
-def render_project_info(db_project: models.Project) -> schemas.ProjectInfo:
-    return schemas.ProjectInfo(
-        id=db_project.id,
-        name=db_project.name,
-        description=db_project.description,
-        logo_id=db_project.logo_id,
-    )
+    return list(map(renders.render_project_info, accessible_projects))
 
 
 @router.get(
@@ -72,15 +50,15 @@ async def read_project(
     project_id: int,
     db_project=Depends(dep.get_project_by_id),
 ):
-    return render_project(db_project)
+    return renders.render_project(db_project)
 
 
 # making an alias depending on the user's preferences
-@router.patch(
-    "/{project_id}",
-    response_model=schemas.Project,
-    dependencies=[Depends(dep.is_project_participant)],
-)
+# @router.patch(
+#     "/{project_id}",
+#     response_model=schemas.Project,
+#     dependencies=[Depends(dep.is_project_participant)],
+# )
 @router.put(
     "/{project_id}",
     response_model=schemas.Project,
@@ -99,7 +77,7 @@ async def update_project(
             detail="Could not update the project",
         )
 
-    return render_project(updated)
+    return renders.render_project(updated)
 
 
 @router.delete(

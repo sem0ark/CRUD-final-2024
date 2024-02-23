@@ -2,7 +2,7 @@ import uvicorn
 from fastapi import FastAPI
 
 from .data import database, models
-from .routes import projects, users
+from .routes import documents, projects, users
 
 models.Base.metadata.create_all(bind=database.engine)
 
@@ -10,6 +10,7 @@ app = FastAPI()
 
 app.include_router(projects.router)
 app.include_router(users.router)
+app.include_router(documents.router)
 
 
 @app.get("/test")

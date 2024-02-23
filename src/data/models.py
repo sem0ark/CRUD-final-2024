@@ -10,9 +10,10 @@ class Project(Base):
     id: Mapped[int] = mapped_column(Integer, primary_key=True)
     name: Mapped[str] = mapped_column(String(length=255))
     description: Mapped[str] = mapped_column(Text, default="")
-    logo_id: Mapped[str] = mapped_column(String(length=255))
 
-    documents: Mapped["Document"] = relationship(back_populates="project")
+    logo_id: Mapped[str] = mapped_column(String(length=255), nullable=True)
+
+    documents: Mapped[list["Document"]] = relationship(back_populates="project")
     users: Mapped[list["Permission"]] = relationship(back_populates="project")
 
 
@@ -20,8 +21,10 @@ class User(Base):
     __tablename__ = "users"
 
     id: Mapped[int] = mapped_column(Integer, primary_key=True)
-    login: Mapped[str] = mapped_column(String(length=255), unique=True, index=True)
-    hashed_password: Mapped[str] = mapped_column(String(length=100))
+    login: Mapped[str] = mapped_column(
+        String(length=255), unique=True, index=True, nullable=False
+    )
+    hashed_password: Mapped[str] = mapped_column(String(length=100), nullable=False)
 
     projects: Mapped[list["Permission"]] = relationship(back_populates="user")
 
@@ -30,9 +33,11 @@ class Document(Base):
     __tablename__ = "documents"
 
     id: Mapped[str] = mapped_column(String(length=255), primary_key=True)
-    name: Mapped[str] = mapped_column(String(length=255), index=True)
+    name: Mapped[str] = mapped_column(String(length=255), index=True, nullable=False)
 
-    project_id: Mapped[int] = mapped_column(Integer, ForeignKey("projects.id"))
+    project_id: Mapped[int] = mapped_column(
+        Integer, ForeignKey("projects.id"), nullable=False
+    )
 
     project: Mapped["Project"] = relationship(back_populates="documents")
 
@@ -45,7 +50,7 @@ class Permission(Base):
     user_id = mapped_column(Integer, ForeignKey("users.id"), primary_key=True)
     project_id = mapped_column(Integer, ForeignKey("projects.id"), primary_key=True)
 
-    permission: Mapped[str] = mapped_column(String(length=40))
+    permission: Mapped[str] = mapped_column(String(length=40), nullable=False)
     # permission is only a name (e.g. OWNER, PARTICIPANT), so it should be short
     # Implemented as a string if later additional roles appear
 
