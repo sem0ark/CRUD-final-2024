@@ -24,8 +24,12 @@ jobs:
     services:
       postgres:
         image: postgres
+        env:
+          POSTGRES_USER: ${{ env.POSTGRES_USER }}
+          POSTGRES_PASSWORD: ${{ env.POSTGRES_PASSWORD }}
+          POSTGRES_DB: ${{ env.POSTGRES_DB }}
         ports:
-          - 4352:5432
+          - "${{ env.POSTGRES_PORT }}:5432"
         options: >-
           --health-cmd pg_isready
           --health-interval 10s
