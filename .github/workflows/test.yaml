@@ -11,6 +11,8 @@ on:
     branches: [ main ]
 
 env:
+  SECRET_KEY: ${{ secrets.SECRET_KEY }}
+  ALGORITHM: HS256
   POSTGRES_USER: dev
   POSTGRES_PASSWORD: dev
   POSTGRES_DB: test
