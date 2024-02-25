@@ -1,0 +1,26 @@
+name: CI - Test
+
+# on simple pull requests and pushes just run the tests
+on:
+  push:
+    branches: [ master ]
+    tags-ignore:
+      - v[0-9]+
+  pull_request:
+    types: [ opened, reopened ]
+    branches: [ master ]
+
+jobs:
+  unit-test:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.10'
+          cache: poetry
+      - run: pip install --no-cache-dir poetry==1.7.1 --quiet && poetry install --only=main --no-interaction --no-ansi
+      - run:  poetry run ruff format ./src ./tests && \
+              poetry run mypy ./src ./tests && \
+              poetry run ruff check ./src ./tests --fix && \
+              poetry run pytest --cov=src tests/

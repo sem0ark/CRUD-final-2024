@@ -8,7 +8,6 @@ from ..utils.logs import log
 from . import dependencies as dep
 
 router = APIRouter(
-    # dependencies=[Depends(get_token_header)],
     responses={404: {"description": "Not found"}},
 )
 
