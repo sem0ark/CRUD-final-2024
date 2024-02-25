@@ -10,11 +10,30 @@ on:
     types: [ opened, reopened ]
     branches: [ main ]
 
+env:
+  POSTGRES_USER: dev
+  POSTGRES_PASSWORD: dev
+  POSTGRES_DB: test
+  POSTGRES_PORT: 5342
+  POSTGRES_HOST: '0.0.0.0'
+
 jobs:
   ci:
     runs-on: ubuntu-latest
+    # https://docs.github.com/en/actions/using-containerized-services/creating-postgresql-service-containers
+    services:
+      postgres:
+        image: postgres
+        ports:
+          - 5432:5432
+        options: >-
+          --health-cmd pg_isready
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 5
     steps:
-      - uses: actions/checkout@v4
+      - name: Check out the repo
+        uses: actions/checkout@v4
       - name: Install Python
         uses: actions/setup-python@v4
         with:
