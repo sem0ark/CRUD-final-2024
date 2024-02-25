@@ -29,7 +29,7 @@ jobs:
           POSTGRES_PASSWORD: ${{ env.POSTGRES_PASSWORD }}
           POSTGRES_DB: ${{ env.POSTGRES_DB }}
         ports:
-          - "$POSTGRES_PORT:5432"
+          - "4352:5432"
         options: >-
           --health-cmd pg_isready
           --health-interval 10s
