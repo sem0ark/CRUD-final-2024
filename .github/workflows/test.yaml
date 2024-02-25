@@ -14,7 +14,7 @@ env:
   POSTGRES_USER: dev
   POSTGRES_PASSWORD: dev
   POSTGRES_DB: test
-  POSTGRES_PORT: 5342
+  POSTGRES_PORT: 4352
   POSTGRES_HOST: '0.0.0.0'
 
 jobs:
@@ -25,7 +25,7 @@ jobs:
       postgres:
         image: postgres
         ports:
-          - 5432:5432
+          - ${{ env.POSTGRES_PORT }}:5432
         options: >-
           --health-cmd pg_isready
           --health-interval 10s
