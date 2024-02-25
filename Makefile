@@ -18,14 +18,14 @@ test-ci:
 	${RUN} pytest --cov=src tests/
 
 dev:
-	docker compose up -d db-postgres
+	docker compose up -d db
 	${RUN} python -m src.main
 
 build:
 	docker build -t backend-image .
 
 run-compose:
-	docker compose up -d db-postgres
+	docker compose up -d db
 	docker compose up -d web
 
 stop-compose:

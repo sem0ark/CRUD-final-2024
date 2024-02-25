@@ -2,8 +2,8 @@ version: '3'
 
 # https://github.com/felipewom/docker-compose-postgres/blob/main/docker-compose.yml
 services:
-  db-postgres:
-    container_name: postgres
+  db:
+    container_name: db
     image: postgres:16.2-alpine
     restart: always
     environment:
@@ -12,8 +12,6 @@ services:
       POSTGRES_DB: ${POSTGRES_DB}
     volumes:
       - db-data:/var/lib/postgresql/data/
-    networks:
-      - postgres-network
     ports:
       - "${POSTGRES_PORT}:5432"
     healthcheck:
@@ -26,7 +24,6 @@ services:
   web:
     container_name: backend
     build: .
-    restart: always
     environment:
       POSTGRES_HOST: ${POSTGRES_HOST}
       POSTGRES_PORT: ${POSTGRES_PORT}
@@ -37,11 +34,8 @@ services:
       ALGORITHM: ${ALGORITHM}
     ports:
       - "80:8000"
-    depends_on:
-      db-postgres:
-        condition: service_healthy
-    networks:
-      - postgres-network
+    volumes:
+      - ./src:/code/src
     healthcheck:
       test: ["CMD-SHELL", "curl", "http://0.0.0.0:8000/test"]
       interval: 30s
@@ -49,8 +43,5 @@ services:
       retries: 5
       start_period: 20s
 
-networks:
-  postgres-network:
-    driver: bridge
 volumes:
   db-data:

@@ -11,16 +11,13 @@ ENV PYTHONFAULTHANDLER=1 \
   PIP_DEFAULT_TIMEOUT=100 \
   # Poetry's configuration:
   POETRY_NO_INTERACTION=1 \
-  POETRY_VIRTUALENVS_CREATE=1 \
-  POETRY_VIRTUALENVS_IN_PROJECT=1 \
+  POETRY_VIRTUALENVS_CREATE=0 \
+  POETRY_VIRTUALENVS_IN_PROJECT=0 \
   POETRY_VERSION=1.7.1
 
 # System deps: poetry
-# RUN curl -sSL https://install.python-poetry.org | python3 -
-# ENV PATH="$POETRY_HOME/:$PATH"
-
 RUN apt-get update \
-    && apt-get -y install libpq-dev gcc \
+    && apt-get -y install libpq-dev gcc netcat-traditional \
     && pip install --no-cache-dir poetry==${POETRY_VERSION} --quiet \
     && pip install psycopg2
 
@@ -31,16 +28,18 @@ COPY poetry.lock pyproject.toml /code/
 WORKDIR /code/
 RUN poetry install --only=main --no-interaction --no-ansi
 
+# Creating folders, and files for a project:
+COPY ./src /code/src
+COPY entrypoint.sh /code
+WORKDIR /code
+RUN chmod +x /code/entrypoint.sh
+
 # Use Unprivileged Containers
 # https://testdriven.io/blog/docker-best-practices/#order-dockerfile-commands-appropriately
 RUN addgroup --system app && adduser --system --group app
 USER app
 
-# Creating folders, and files for a project:
-COPY ./src /code/src
-WORKDIR /code
-
+ENTRYPOINT ["/bin/bash", "entrypoint.sh"]
 CMD ["poetry", "run", "python", "-m", "src.main"]
 
-# just doesn't work for some reason
 # CMD ["poetry", "run", "python", "-m", "uvicorn", "src.main:app", "--host", "0.0.0.0", "--port", "8000"]
