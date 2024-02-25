@@ -3,12 +3,12 @@ name: CI - Test
 # on simple pull requests and pushes just run the tests
 on:
   push:
-    branches: [ master ]
+    branches: [ main ]
     tags-ignore:
       - v[0-9]+
   pull_request:
     types: [ opened, reopened ]
-    branches: [ master ]
+    branches: [ main ]
 
 jobs:
   unit-test:
