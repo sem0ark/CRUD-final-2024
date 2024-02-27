@@ -3,12 +3,12 @@ name: CI - Test
 # on simple pull requests and pushes just run the tests
 on:
   push:
-    branches: [ main ]
+    branches: [main]
     tags-ignore:
       - v[0-9]+
   pull_request:
-    types: [ opened, reopened ]
-    branches: [ main ]
+    types: [opened, reopened]
+    branches: [main]
 
 env:
   SECRET_KEY: ${{ secrets.SECRET_KEY }}
@@ -17,7 +17,7 @@ env:
   POSTGRES_PASSWORD: dev
   POSTGRES_DB: test
   POSTGRES_PORT: 4352
-  POSTGRES_HOST: '0.0.0.0'
+  POSTGRES_HOST: "0.0.0.0"
 
 jobs:
   ci:
@@ -43,11 +43,11 @@ jobs:
       - name: Install Python
         uses: actions/setup-python@v4
         with:
-          python-verion: '3.10'
+          python-verion: "3.10"
       - name: Install poetry
         uses: abatilo/actions-poetry@v2
         with:
-          poetry-version: '1.7.1'
+          poetry-version: "1.7.1"
       - uses: actions/cache@v3
         name: Define a cache for the virtual environment based on the dependencies lock file
         with:
@@ -57,5 +57,7 @@ jobs:
         run: poetry install --no-interaction --no-ansi
       - name: Lint files
         run: poetry run ruff format ./src ./tests && poetry run mypy ./src ./tests && poetry run ruff check ./src ./tests --fix
+      - name: Run migrations
+        run: poetry run alembic upgrade head
       - name: Run pytest
         run: poetry run pytest --cov=src tests/
