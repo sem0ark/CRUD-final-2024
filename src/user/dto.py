@@ -1,42 +1,6 @@
 from pydantic import BaseModel, ConfigDict, Field
 
 
-class DocumentCreate(BaseModel):
-    name: str = Field(max_length=200)
-
-
-class Document(DocumentCreate):
-    id: str
-
-    model_config = ConfigDict(from_attributes=True)
-    # replacement for pydantic 2, see documentation on ConfigDict
-
-
-class ProjectCreate(BaseModel):
-    name: str = Field(max_length=200)
-    description: str = ""
-
-
-class ProjectUpdate(BaseModel):
-    name: str | None = Field(max_length=200, default=None)
-    description: str | None = None
-
-
-class ProjectInfo(ProjectCreate):
-    id: int
-    logo_id: str | None
-
-
-class Project(ProjectInfo):
-    documents: list[Document]
-
-    model_config = ConfigDict(from_attributes=True)
-
-
-class ProjectListing(BaseModel):
-    projects: list[Project]
-
-
 class UserBase(BaseModel):
     login: str = Field(max_length=200)
 

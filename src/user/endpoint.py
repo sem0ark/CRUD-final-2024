@@ -5,10 +5,10 @@ from fastapi import APIRouter, Depends, HTTPException, status
 from fastapi.security import OAuth2PasswordRequestForm
 from sqlalchemy.orm import Session
 
-from src.config import ACCESS_TOKEN_EXPIRE_MINUTES
+from src.auth.auth import authenticate_user, create_access_token, get_password_hash
 from src.data import crud, models, schemas
-from src.routes.auth import authenticate_user, create_access_token, get_password_hash
 from src.routes.dependencies import get_db
+from src.shared.config import ACCESS_TOKEN_EXPIRE_MINUTES
 
 router = APIRouter(
     responses={404: {"description": "Not found"}},

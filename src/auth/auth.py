@@ -6,9 +6,9 @@ from jose import jwt
 from passlib.context import CryptContext
 from sqlalchemy.orm import Session
 
-from src.config import ALGORITHM, SECRET_KEY
-from src.data import crud
-from src.utils.logs import log
+from src.shared.config import ALGORITHM, SECRET_KEY
+from src.shared.logs import log
+from src.user import dao as user_dao
 
 pwd_context = CryptContext(schemes=["bcrypt"])
 oauth2_scheme = OAuth2PasswordBearer(tokenUrl="login_form")
@@ -27,15 +27,6 @@ def get_password_hash(password):
     return hashed_password
 
 
-def authenticate_user(db: Session, login: str, password: str):
-    user = crud.get_user_by_login(db, login)
-    if not user:
-        return False
-    if not verify_password(password, user.hashed_password):
-        return False
-    return user
-
-
 def create_access_token(data: dict[str, Any], expires_delta: timedelta | None = None):
     to_encode = data.copy()
     if expires_delta:
@@ -46,3 +37,12 @@ def create_access_token(data: dict[str, Any], expires_delta: timedelta | None = 
     to_encode.update({"exp": expire})
     encoded_jwt = jwt.encode(to_encode, SECRET_KEY, algorithm=ALGORITHM)
     return encoded_jwt
+
+
+def authenticate_user(db: Session, login: str, password: str):
+    user = user_dao.get_user_by_login(db, login)
+    if not user:
+        return False
+    if not verify_password(password, user.hashed_password):
+        return False
+    return user

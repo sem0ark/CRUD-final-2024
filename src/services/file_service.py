@@ -3,7 +3,7 @@ from pathlib import Path
 
 from fastapi import UploadFile
 
-from src.config import DOCUMENT_FOLDER
+from src.shared.config import DOCUMENT_FOLDER
 
 
 def save_document(in_file: UploadFile, id: str):
