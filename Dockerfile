@@ -31,6 +31,8 @@ RUN poetry install --only=main --no-interaction --no-ansi
 # Creating folders, and files for a project:
 # COPY ./src /code/src
 COPY entrypoint.sh /code
+COPY ./alembic.ini /code/alembic.ini
+COPY ./alembic /code/alembic
 WORKDIR /code
 RUN chmod +x /code/entrypoint.sh
 
@@ -41,5 +43,3 @@ USER app
 
 ENTRYPOINT ["/bin/bash", "entrypoint.sh"]
 # CMD ["poetry", "run", "python", "-m", "src.main"]
-
-CMD ["uvicorn", "src.main:app", "--host", "0.0.0.0", "--port", "8000", "--reload"]

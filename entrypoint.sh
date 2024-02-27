@@ -7,5 +7,17 @@ while ! nc -z db $POSTGRES_PORT; do
 done
 echo "PostgreSQL started"
 
-echo "add command for your migrations here"
+echo "Running migrations"
+alembic upgrade head
+
+echo "Running server"
+
+if [ "$DEV" = "1" ]
+then
+uvicorn src.main:app --host 0.0.0.0 --port 8000 --reload
+else
+uvicorn src.main:app --host 0.0.0.0 --port 8000
+fi
+
+echo "Running exec command"
 exec "$@"
