@@ -11,7 +11,9 @@ load_dotenv()
 __postgres_user = os.environ["POSTGRES_USER"]
 __postgres_password = os.environ["POSTGRES_PASSWORD"]
 __postgres_port = os.environ["POSTGRES_PORT"]
-__postgres_host = os.environ["POSTGRES_HOST"]
+__postgres_host = (
+    os.environ["POSTGRES_HOST"] if not os.environ.get("DEV", False) else "localhost"
+)
 __postgres_db = os.environ["POSTGRES_DB"]
 
 

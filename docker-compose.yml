@@ -1,4 +1,4 @@
-version: '3'
+version: "3"
 
 # https://github.com/felipewom/docker-compose-postgres/blob/main/docker-compose.yml
 services:

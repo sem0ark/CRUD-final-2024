@@ -4,7 +4,7 @@ from fastapi import Depends, HTTPException, UploadFile, status
 from jose import JWTError, jwt
 from sqlalchemy.orm import Session
 
-from ..config import (
+from src.config import (
     ALGORITHM,
     ALLOWED_DOCUMENT_EXTENCIONS,
     ALLOWED_DOCUMENT_MIME_TYPES,
@@ -12,12 +12,11 @@ from ..config import (
     ALLOWED_LOGO_MIME_TYPES,
     SECRET_KEY,
 )
-from ..data import crud, models
-from ..data.database import SessionLocal
-from ..data.schemas import TokenData
-from ..data.types import PermissionType
-from ..utils.logs import log
-from .auth import oauth2_scheme
+from src.data import crud, models
+from src.data.database import SessionLocal
+from src.data.schemas import TokenData
+from src.routes.auth import oauth2_scheme
+from src.utils.logs import log
 
 
 def get_db():
@@ -93,7 +92,7 @@ for user {current_user.login} on project id {project_id}"
 def is_project_owner(project_role: models.Permission = Depends(project_role)) -> bool:
     log.debug("User is trying to access owner-role action")
 
-    if project_role.permission != PermissionType.owner.value:
+    if project_role.type != models.PermissionType.owner.value:
         log.debug("User failed to access owner-role action")
         raise HTTPException(
             status_code=status.HTTP_401_UNAUTHORIZED,
@@ -105,7 +104,7 @@ def is_project_owner(project_role: models.Permission = Depends(project_role)) ->
 
 # implemented for readability
 def is_project_participant(
-    _project_role: PermissionType = Depends(project_role),
+    _project_role: models.PermissionType = Depends(project_role),
 ) -> bool:
     return True
 

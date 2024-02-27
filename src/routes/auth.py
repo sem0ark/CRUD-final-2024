@@ -6,9 +6,9 @@ from jose import jwt
 from passlib.context import CryptContext
 from sqlalchemy.orm import Session
 
-from ..config import ALGORITHM, SECRET_KEY
-from ..data import crud
-from ..utils.logs import log
+from src.config import ALGORITHM, SECRET_KEY
+from src.data import crud
+from src.utils.logs import log
 
 pwd_context = CryptContext(schemes=["bcrypt"])
 oauth2_scheme = OAuth2PasswordBearer(tokenUrl="login_form")

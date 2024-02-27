@@ -1,4 +1,4 @@
-from ..data import models, schemas
+from src.data import models, schemas
 
 
 def render_document(document: models.Document) -> schemas.Document:

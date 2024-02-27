@@ -3,9 +3,9 @@ from typing import Annotated
 from fastapi import APIRouter, Depends, HTTPException, Query, status
 from sqlalchemy.orm import Session
 
-from ..data import crud, models, schemas
-from ..utils import renders
-from . import dependencies as dep
+from src.data import crud, models, schemas
+from src.routes import dependencies as dep
+from src.utils import renders
 
 router = APIRouter(
     prefix="/project",

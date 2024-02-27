@@ -3,8 +3,8 @@ from uuid import uuid4
 from sqlalchemy.exc import IntegrityError
 from sqlalchemy.orm import Session
 
-from ..utils.logs import log
-from . import models, schemas, types
+from src.data import models, schemas
+from src.utils.logs import log
 
 
 def get_user(db: Session, user_id: int) -> models.User | None:
@@ -58,7 +58,7 @@ def grant_access_to_user(db: Session, project: models.Project, user: models.User
 access to project [{project.id}, {project.name}]"
     )
     try:
-        a = models.Permission(permission=types.PermissionType.participant.value)
+        a = models.Permission(permission=models.PermissionType.participant.value)
         a.user = user
         project.users.append(a)
         db.commit()
@@ -80,7 +80,7 @@ name='{project.name}', description='{project.description}'"
     log.debug(
         f"Adding the creator to the project: login='{owner.login}', id='{owner.id}'"
     )
-    a = models.Permission(permission=types.PermissionType.owner.value)
+    a = models.Permission(permission=models.PermissionType.owner.value)
     a.user = owner
     db_project.users.append(a)
     db.commit()

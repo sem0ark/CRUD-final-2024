@@ -1,7 +1,15 @@
+import enum
+
 from sqlalchemy import ForeignKey, Integer, String, Text
 from sqlalchemy.orm import Mapped, mapped_column, relationship
+from sqlalchemy.sql.sqltypes import Enum
 
-from .database import Base
+from src.data.database import Base
+
+
+class PermissionType(enum.Enum):
+    owner = "OWNER"
+    participant = "PARTICIPANT"
 
 
 class Project(Base):
@@ -50,9 +58,7 @@ class Permission(Base):
     user_id = mapped_column(Integer, ForeignKey("users.id"), primary_key=True)
     project_id = mapped_column(Integer, ForeignKey("projects.id"), primary_key=True)
 
-    permission: Mapped[str] = mapped_column(String(length=40), nullable=False)
-    # permission is only a name (e.g. OWNER, PARTICIPANT), so it should be short
-    # Implemented as a string if later additional roles appear
+    type: Mapped[str] = mapped_column(Enum(PermissionType), nullable=False)
 
     user: Mapped["User"] = relationship(back_populates="projects")
     project: Mapped["Project"] = relationship(back_populates="users")

@@ -11,12 +11,6 @@ test:
 	${RUN} ruff check ./src ./tests --fix
 	${RUN} pytest --cov=src tests/
 
-test-ci:
-	${RUN} ruff format ./src ./tests
-	${RUN} mypy ./src ./tests
-	${RUN} ruff check ./src ./tests --fix
-	${RUN} pytest --cov=src tests/
-
 dev:
 	docker compose up -d db
 	${RUN} python -m src.main

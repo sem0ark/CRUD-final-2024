@@ -1,11 +1,11 @@
 from fastapi import APIRouter, Depends, UploadFile, status
 from fastapi.responses import FileResponse
 
-from ..data import crud, models, schemas
-from ..services import file_service
-from ..utils import renders
-from ..utils.logs import log
-from . import dependencies as dep
+from src.data import crud, models, schemas
+from src.routes import dependencies as dep
+from src.services import file_service
+from src.utils import renders
+from src.utils.logs import log
 
 router = APIRouter(
     responses={404: {"description": "Not found"}},

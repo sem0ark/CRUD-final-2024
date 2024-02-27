@@ -1,10 +1,9 @@
-import uvicorn
 from asgi_correlation_id import CorrelationIdMiddleware
 from fastapi import FastAPI
 
-from .data import database, models
-from .routes import documents, projects, users
-from .utils.logs import configure_logging
+from src.data import database, models
+from src.routes import documents, projects, users
+from src.utils.logs import configure_logging
 
 models.Base.metadata.create_all(bind=database.engine)
 
@@ -23,7 +22,3 @@ app.include_router(documents.router)
 @app.get("/test")
 async def run_test() -> str:
     return "Success"
-
-
-if __name__ == "__main__":
-    uvicorn.run(app, host="0.0.0.0", port=8000)

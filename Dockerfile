@@ -29,7 +29,7 @@ WORKDIR /code/
 RUN poetry install --only=main --no-interaction --no-ansi
 
 # Creating folders, and files for a project:
-COPY ./src /code/src
+# COPY ./src /code/src
 COPY entrypoint.sh /code
 WORKDIR /code
 RUN chmod +x /code/entrypoint.sh
@@ -40,6 +40,6 @@ RUN addgroup --system app && adduser --system --group app
 USER app
 
 ENTRYPOINT ["/bin/bash", "entrypoint.sh"]
-CMD ["poetry", "run", "python", "-m", "src.main"]
+# CMD ["poetry", "run", "python", "-m", "src.main"]
 
-# CMD ["poetry", "run", "python", "-m", "uvicorn", "src.main:app", "--host", "0.0.0.0", "--port", "8000"]
+CMD ["uvicorn", "src.main:app", "--host", "0.0.0.0", "--port", "8000", "--reload"]
