@@ -45,4 +45,4 @@ ALLOWED_LOGO_MIME_TYPES = [
 ALLOWED_LOGO_EXTENCIONS = [".png", ".jpg", ".jpeg"]
 
 # later change all incoming logos to "size x size" square JPG images to save space
-LOGO_SIZE = 400
+LOGO_SIZE = 200

@@ -17,7 +17,6 @@ class ProjectUpdate(BaseModel):
 
 class ProjectInfo(ProjectCreate, BaseTimestamp):
     id: int
-    logo_id: str | None
 
 
 class Project(ProjectInfo):
@@ -37,7 +36,6 @@ def project(db_project: project_models.Project) -> Project:
         id=db_project.id,
         name=db_project.name,
         description=db_project.description,
-        logo_id=db_project.logo_id,
         documents=list(map(document_dto.document, project_documents)),
         created_at=db_project.created_at,
         updated_at=db_project.updated_at,
@@ -51,7 +49,6 @@ def project_info(db_project: project_models.Project) -> ProjectInfo:
         id=db_project.id,
         name=db_project.name,
         description=db_project.description,
-        logo_id=db_project.logo_id,
         created_at=db_project.created_at,
         updated_at=db_project.updated_at,
     )

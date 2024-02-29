@@ -15,7 +15,7 @@ class Project(Base, BaseTimestamp):
     name: Mapped[str] = mapped_column(String(length=255))
     description: Mapped[str] = mapped_column(Text, default="")
 
-    logo_id: Mapped[str] = mapped_column(String(length=255), nullable=True)
+    logo_id: Mapped[str | None] = mapped_column(String(length=255), nullable=True)
 
     documents: Mapped[list["src.document.models.Document"]] = relationship(
         back_populates="project"

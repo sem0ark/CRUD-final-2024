@@ -100,5 +100,6 @@ def reupload_document(
     dependencies=[Depends(auth_deps.is_project_owner)],
     status_code=status.HTTP_204_NO_CONTENT,
 )
-def delete_document(document_id: str, db=Depends(get_db)):
+def delete_document(document_id: str, db: Session = Depends(get_db)):
+    document_dao.delete_document(db, document_id)
     file_service.delete_document_by_id(document_id)

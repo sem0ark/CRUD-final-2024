@@ -30,17 +30,16 @@ RUN poetry install --only=main --no-interaction --no-ansi
 
 # Creating folders, and files for a project:
 # COPY ./src /code/src
-COPY entrypoint.sh /code
-COPY ./alembic.ini /code/alembic.ini
+COPY entrypoint.sh ./alembic.ini /code
 COPY ./alembic /code/alembic
 WORKDIR /code
 
 # Use Unprivileged Containers
 # https://testdriven.io/blog/docker-best-practices/#order-dockerfile-commands-appropriately
-RUN chmod +x /code/entrypoint.sh
-RUN addgroup --system --gid 1001 app
-RUN adduser  --system -h /code --uid 1001 --group app
-RUN mkdir -p /code/files && chown -R 1001:1001 /code/files
+RUN chmod +x /code/entrypoint.sh && \
+    addgroup --system --gid 1001 app && \
+    adduser  --system -h /code --uid 1001 --group app && \
+    mkdir -p /code/files && chown -R 1001:1001 /code/files
 USER 1001
 
 ENTRYPOINT ["/bin/bash", "entrypoint.sh"]

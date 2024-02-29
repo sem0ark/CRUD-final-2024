@@ -53,3 +53,8 @@ def get_available_documents(
     if not db_project:
         return None
     return list(db_project.documents)[offset : offset + limit]
+
+
+def delete_document(db: Session, document_id: str) -> None:
+    db_document = get_document_by_id(db, document_id)
+    db.delete(db_document)

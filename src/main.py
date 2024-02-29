@@ -2,6 +2,7 @@ from asgi_correlation_id import CorrelationIdMiddleware
 from fastapi import FastAPI
 
 import src.document.endpoint as document_routes
+import src.logo.endpoint as logo_routes
 import src.project.endpoint as project_routes
 import src.user.endpoint as user_routes
 from src.shared.database import Base, engine
@@ -19,6 +20,7 @@ app.add_middleware(CorrelationIdMiddleware)
 app.include_router(document_routes.router)
 app.include_router(project_routes.router)
 app.include_router(user_routes.router)
+app.include_router(logo_routes.router)
 
 
 @app.get("/test")
