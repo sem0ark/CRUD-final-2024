@@ -15,7 +15,11 @@ def create_project(
         f"Creating a project with values: \
 name='{project.name}', description='{project.description}'"
     )
-    db_project = project_models.Project(**project.model_dump())
+    db_project = project_models.Project(
+        **project.model_dump(
+            exclude_none=True, exclude_defaults=True, exclude_unset=True
+        )
+    )
     db.add(db_project)
 
     log.debug(
@@ -38,14 +42,18 @@ def get_project_role(
 
 
 def get_accessible_projects(
-    db: Session, user_id: int
+    db: Session,
+    user_id: int,
+    limit: int = 10,
+    offset: int = 0,
 ) -> list[project_models.Project] | None:
     log.debug(f"Finding accessible projects from user: id='{user_id}'")
     user = user_dao.get_user(db, user_id)
+
     if not user:
         return None
 
-    return [assoc.project for assoc in user.projects]
+    return [assoc.project for assoc in user.projects][offset : offset + limit]
 
 
 def get_project(db: Session, project_id: int) -> project_models.Project | None:

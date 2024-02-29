@@ -5,9 +5,10 @@ from sqlalchemy.orm import Mapped, mapped_column, relationship
 import src.auth.models
 import src.document.models
 from src.shared.database import Base
+from src.shared.models import BaseTimestamp
 
 
-class Project(Base):
+class Project(Base, BaseTimestamp):
     __tablename__ = "projects"
 
     id: Mapped[int] = mapped_column(Integer, primary_key=True)

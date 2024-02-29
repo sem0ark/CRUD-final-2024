@@ -25,6 +25,8 @@ stop-compose:
 stop-compose-clear:
 	docker compose down --rmi=local
 
+stop-compose-clear-full:
+	docker compose down --volumes --rmi=local
 
 dev:
 	make stop-compose-clear

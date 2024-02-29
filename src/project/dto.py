@@ -2,6 +2,7 @@ from pydantic import BaseModel, ConfigDict, Field
 
 import src.document.dto as document_dto
 import src.project.models as project_models
+from src.shared.dto import BaseTimestamp
 
 
 class ProjectCreate(BaseModel):
@@ -14,7 +15,7 @@ class ProjectUpdate(BaseModel):
     description: str | None = None
 
 
-class ProjectInfo(ProjectCreate):
+class ProjectInfo(ProjectCreate, BaseTimestamp):
     id: int
     logo_id: str | None
 
@@ -38,6 +39,8 @@ def project(db_project: project_models.Project) -> Project:
         description=db_project.description,
         logo_id=db_project.logo_id,
         documents=list(map(document_dto.document, project_documents)),
+        created_at=db_project.created_at,
+        updated_at=db_project.updated_at,
     )
 
 
@@ -49,4 +52,6 @@ def project_info(db_project: project_models.Project) -> ProjectInfo:
         name=db_project.name,
         description=db_project.description,
         logo_id=db_project.logo_id,
+        created_at=db_project.created_at,
+        updated_at=db_project.updated_at,
     )

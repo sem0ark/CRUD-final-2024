@@ -13,15 +13,13 @@ oauth2_scheme = OAuth2PasswordBearer(tokenUrl="login_form")
 
 
 def verify_password(plain_password, hashed_password):
-    log.debug(
-        f"Trying to verify password '{plain_password}' with hash '{hashed_password}'"
-    )
+    log.debug("Verifying the password")
     return pwd_context.verify(plain_password, hashed_password)
 
 
 def get_password_hash(password):
     hashed_password = pwd_context.hash(password)
-    log.debug(f"Trying to hash password '{password}' into hash '{hashed_password}'")
+    log.debug("Hashing the password")
     return hashed_password
 
 
@@ -30,8 +28,10 @@ def create_access_token(data: dict[str, Any], expires_delta: timedelta | None = 
     if expires_delta:
         expire = datetime.now(timezone.utc) + expires_delta
     else:
-        expire = datetime.now(timezone.utc) + timedelta(minutes=5)
+        expire = datetime.now(timezone.utc) + timedelta(minutes=1)
 
     to_encode.update({"exp": expire})
     encoded_jwt = jwt.encode(to_encode, SECRET_KEY, algorithm=ALGORITHM)
+    log.debug(f"Created new token until {expire}")
+
     return encoded_jwt

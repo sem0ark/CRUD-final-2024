@@ -1,4 +1,4 @@
-from fastapi import APIRouter, Depends, UploadFile, status
+from fastapi import APIRouter, Depends, Query, UploadFile, status
 from fastapi.responses import FileResponse
 
 import src.auth.dependencies as auth_deps
@@ -7,12 +7,10 @@ import src.document.dependencies as document_deps
 import src.document.dto as document_dto
 import src.document.models as document_models
 import src.project.dependencies as project_deps
-import src.project.models as project_models
 import src.user.dependencies as user_deps
 import src.user.models as user_models
 from src.services import file_service
 from src.shared.database import Session, get_db
-from src.shared.logs import log
 
 router = APIRouter(
     tags=["documents"],
@@ -27,14 +25,14 @@ router = APIRouter(
 )
 def get_available_documents(
     project_id: int,
-    project: project_models.Project = Depends(project_deps.get_project_by_id),
+    db: Session = Depends(get_db),
+    limit: int = Query(default=10),
+    offset: int = Query(default=0),
 ):
-    if not project.documents:
+    documents = document_dao.get_available_documents(db, project_id, limit, offset)
+    if documents is None:
         return []
-
-    log.debug(f"Received available documents {project.documents}")
-
-    return list(map(document_dto.document, project.documents))
+    return list(map(document_dto.document, documents))
 
 
 @router.post(

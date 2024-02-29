@@ -32,12 +32,16 @@ async def create_project(
 
 
 @router.get("/", response_model=list[project_dto.ProjectInfo])
-async def read_projects(
+async def get_accessible_projects(
     db: Session = Depends(get_db),
     user: user_models.User = Depends(user_deps.get_current_user),
+    limit: int = Query(default=10),
+    offset: int = Query(default=0),
 ):
-    accessible_projects = project_dao.get_accessible_projects(db, user.id)
-    if not accessible_projects:
+    accessible_projects = project_dao.get_accessible_projects(
+        db, user.id, limit, offset
+    )
+    if accessible_projects is None:
         raise HTTPException(
             status_code=status.HTTP_403_FORBIDDEN, detail="Not authorized"
         )

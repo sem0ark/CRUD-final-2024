@@ -7,6 +7,7 @@ from sqlalchemy.sql.sqltypes import Enum
 import src.project.models
 import src.user.models
 from src.shared.database import Base
+from src.shared.models import BaseTimestamp
 
 
 class PermissionType(enum.Enum):
@@ -15,7 +16,7 @@ class PermissionType(enum.Enum):
 
 
 # https://docs.sqlalchemy.org/en/20/orm/basic_relationships.html#association-object
-class Permission(Base):
+class Permission(Base, BaseTimestamp):
     # implemented through assiciation object structure
     __tablename__ = "permissions"
 

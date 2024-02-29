@@ -3,12 +3,13 @@ from sqlalchemy.orm import Mapped, mapped_column, relationship
 
 import src.project.models
 from src.shared.database import Base
+from src.shared.models import BaseTimestamp
 
 # standard import to solve cyclyc import problem
 # https://stackoverflow.com/questions/5748946/pythonic-way-to-resolve-circular-import-statements
 
 
-class Document(Base):
+class Document(Base, BaseTimestamp):
     __tablename__ = "documents"
 
     id: Mapped[str] = mapped_column(String(length=255), primary_key=True)

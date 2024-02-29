@@ -32,7 +32,7 @@ def get_current_user(
     )
 
     try:
-        log.debug(f"Trying to process token '{token}'")
+        log.debug("Trying to process a token")
         payload = jwt.decode(token, SECRET_KEY, algorithms=[ALGORITHM])
         log.debug(f"Received payload '{payload}' from the token")
 

@@ -18,7 +18,7 @@ def configure_logging() -> None:
                 "console": {
                     "class": "logging.Formatter",
                     "datefmt": "%H:%M:%S",
-                    "format": "%(levelname)s: \t  %(asctime)s \
+                    "format": "%(levelname)s: %(asctime)s \
 %(name)s:%(lineno)d [%(correlation_id)s] %(message)s",
                 },
             },

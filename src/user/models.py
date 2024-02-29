@@ -3,9 +3,10 @@ from sqlalchemy.orm import Mapped, mapped_column, relationship
 
 import src.auth.models
 from src.shared.database import Base
+from src.shared.models import BaseTimestamp
 
 
-class User(Base):
+class User(Base, BaseTimestamp):
     __tablename__ = "users"
 
     id: Mapped[int] = mapped_column(Integer, primary_key=True)

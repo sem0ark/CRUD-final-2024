@@ -19,11 +19,6 @@ def project_role(
 ) -> auth_models.Permission:
     project_role = project_dao.get_project_role(db, project_id, current_user.id)
 
-    log.debug(
-        f"Received project role {project_role.type if project_role else None} \
-for user {current_user.login} on project id {project_id}"
-    )
-
     if not project_role:
         raise HTTPException(
             status_code=status.HTTP_401_UNAUTHORIZED,
@@ -53,4 +48,5 @@ def is_project_owner(
 def is_project_participant(
     _project_role: auth_models.PermissionType = Depends(project_role),
 ) -> bool:
+    log.debug("User has access to project")
     return True

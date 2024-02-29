@@ -12,10 +12,7 @@ from src.shared.logs import log
 def grant_access_to_user(
     db: Session, project: project_models.Project, user: user_models.User
 ):
-    log.debug(
-        f"Giving user[{user.id}, {user.login}] \
-access to project [{project.id}, {project.name}]"
-    )
+    log.debug(f"Giving {user.login} access to project [{project.id}]")
     try:
         a = auth_models.Permission(type=auth_models.PermissionType.participant)
         a.user = user
@@ -23,6 +20,7 @@ access to project [{project.id}, {project.name}]"
         db.commit()
         db.refresh(project)
     except IntegrityError:
+        log.debug(f"Failed to grant access to user {user.login}, access already exists")
         db.rollback()
         return None
     return project
@@ -30,8 +28,12 @@ access to project [{project.id}, {project.name}]"
 
 def authenticate_user(db: Session, login: str, password: str):
     user = user_dao.get_user_by_login(db, login)
+    log.debug(f"Authenticating user {login}")
     if not user:
+        log.debug(f"Was not able to find user {login}")
         return False
     if not auth_utils.verify_password(password, user.hashed_password):
+        log.debug(f"Password verification for {login} failed")
         return False
+    log.debug("Authentication successed")
     return user
