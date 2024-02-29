@@ -16,10 +16,8 @@ __postgres_host = (
 )
 __postgres_db = os.environ["POSTGRES_DB"]
 
-
 # "postgres+psycopg2://<USERNAME>:<PASSWORD>@<IP_ADDRESS>:<PORT>/<DATABASE_NAME>"
-# SQLALCHEMY_DATABASE_URL: str = f"postgresql+psycopg2://{__postgres_user}:{__postgres_password}\
-SQLALCHEMY_DATABASE_URL: str = f"postgresql://{__postgres_user}:{__postgres_password}\
+SQLALCHEMY_DATABASE_URL: str = f"postgresql+psycopg2://{__postgres_user}:{__postgres_password}\
 @{__postgres_host}:{__postgres_port}/{__postgres_db}"
 
 SECRET_KEY = os.environ["SECRET_KEY"]
