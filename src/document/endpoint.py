@@ -8,8 +8,10 @@ import src.document.dto as document_dto
 import src.document.models as document_models
 import src.project.dependencies as project_deps
 import src.project.models as project_models
+import src.user.dependencies as user_deps
+import src.user.models as user_models
 from src.services import file_service
-from src.shared.database import get_db
+from src.shared.database import Session, get_db
 from src.shared.logs import log
 
 router = APIRouter(
@@ -58,15 +60,16 @@ def upload_document(
 
 @router.get(
     "/document/{document_id}",
-    dependencies=[
-        Depends(project_deps.get_project_id_by_document_id),
-        Depends(auth_deps.is_project_participant),
-    ],
 )
 def download_document(
     document_id: str,
     document: document_models.Document = Depends(document_deps.get_document_by_id),
+    db: Session = Depends(get_db),
+    current_user: user_models.User = Depends(user_deps.get_current_user),
 ):
+    auth_deps.is_project_participant(
+        auth_deps.project_role(document.project_id, db, current_user)
+    )
     return FileResponse(file_service.get_document(document.id), filename=document.name)
 
 
