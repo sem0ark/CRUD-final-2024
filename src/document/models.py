@@ -17,7 +17,7 @@ class Document(Base):
     project_id: Mapped[int] = mapped_column(
         Integer, ForeignKey("projects.id"), nullable=False
     )
-
+    # implemented like that to avoid import cycles + allowing mypy type checking
     project: Mapped["src.project.models.Project"] = relationship(
         back_populates="documents"
     )

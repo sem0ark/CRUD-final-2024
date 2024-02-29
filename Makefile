@@ -9,7 +9,7 @@ test:
 	${RUN} ruff format ./src ./tests
 	${RUN} mypy ./src ./tests
 	${RUN} ruff check ./src ./tests --fix
-	${RUN} pytest --cov=src tests/
+	export RUN_LOCAL='1' && ${RUN} pytest --cov=src tests/
 
 
 build:
@@ -23,7 +23,7 @@ stop-compose:
 	docker compose stop
 
 stop-compose-clear:
-	docker compose down --volumes --rmi=local
+	docker compose down --rmi=local
 
 
 dev:

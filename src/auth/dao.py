@@ -17,9 +17,7 @@ def grant_access_to_user(
 access to project [{project.id}, {project.name}]"
     )
     try:
-        a = auth_models.Permission(
-            permission=auth_models.PermissionType.participant.value
-        )
+        a = auth_models.Permission(type=auth_models.PermissionType.participant)
         a.user = user
         project.users.append(a)
         db.commit()

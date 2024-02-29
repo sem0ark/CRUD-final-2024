@@ -20,7 +20,7 @@ def project_role(
     project_role = project_dao.get_project_role(db, project_id, current_user.id)
 
     log.debug(
-        f"Received project role {project_role} \
+        f"Received project role {project_role.type if project_role else None} \
 for user {current_user.login} on project id {project_id}"
     )
 
@@ -39,7 +39,7 @@ def is_project_owner(
 ) -> bool:
     log.debug("User is trying to access owner-role action")
 
-    if project_role.type != auth_models.PermissionType.owner.value:
+    if project_role.type != auth_models.PermissionType.owner:
         log.debug("User failed to access owner-role action")
         raise HTTPException(
             status_code=status.HTTP_401_UNAUTHORIZED,

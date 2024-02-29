@@ -34,12 +34,14 @@ COPY entrypoint.sh /code
 COPY ./alembic.ini /code/alembic.ini
 COPY ./alembic /code/alembic
 WORKDIR /code
-RUN chmod +x /code/entrypoint.sh
 
 # Use Unprivileged Containers
 # https://testdriven.io/blog/docker-best-practices/#order-dockerfile-commands-appropriately
-RUN addgroup --system app && adduser --system --group app
-USER app
+RUN chmod +x /code/entrypoint.sh
+RUN addgroup --system --gid 1001 app
+RUN adduser  --system -h /code --uid 1001 --group app
+RUN mkdir -p /code/files && chown -R 1001:1001 /code/files
+USER 1001
 
 ENTRYPOINT ["/bin/bash", "entrypoint.sh"]
 # CMD ["poetry", "run", "python", "-m", "src.main"]

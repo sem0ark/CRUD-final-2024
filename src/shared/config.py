@@ -1,5 +1,4 @@
 import os
-import pathlib
 
 from dotenv import load_dotenv
 
@@ -27,17 +26,12 @@ ALGORITHM = os.environ["ALGORITHM"]
 ACCESS_TOKEN_EXPIRE_MINUTES = 60
 
 # we direct to folders from the config location
-DOCUMENT_FOLDER = os.path.join(
-    pathlib.Path(__file__).parent.resolve(), "..", "files", "documents"
-)
-LOGO_FOLDER = os.path.join(
-    pathlib.Path(__file__).parent.resolve(), "..", "files", "logos"
-)
-
+FILE_FOLDER = os.path.join("/", "code", "files")
 
 ALLOWED_DOCUMENT_MIME_TYPES = [
+    "text/plain",  # .txt
     "application/pdf",  # .pdf
-    "application/msword"  # .doc
+    "application/msword",  # .doc
     "application/vnd.openxmlformats-officedocument.wordprocessingml.document",  # .docx
 ]
 

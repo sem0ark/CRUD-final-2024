@@ -21,7 +21,7 @@ name='{project.name}', description='{project.description}'"
     log.debug(
         f"Adding the creator to the project: login='{owner.login}', id='{owner.id}'"
     )
-    a = auth_models.Permission(permission=auth_models.PermissionType.owner.value)
+    a = auth_models.Permission(type=auth_models.PermissionType.owner)
     a.user = owner
     db_project.users.append(a)
     db.commit()

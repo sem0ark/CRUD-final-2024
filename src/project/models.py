@@ -16,7 +16,7 @@ class Project(Base):
 
     logo_id: Mapped[str] = mapped_column(String(length=255), nullable=True)
 
-    documents: Mapped["src.document.models.Document"] = relationship(
+    documents: Mapped[list["src.document.models.Document"]] = relationship(
         back_populates="project"
     )
     users: Mapped[list["src.auth.models.Permission"]] = relationship(

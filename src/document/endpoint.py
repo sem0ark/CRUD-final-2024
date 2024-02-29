@@ -59,13 +59,15 @@ def upload_document(
 @router.get(
     "/document/{document_id}",
     dependencies=[
-        Depends(document_deps.get_document_by_id),
         Depends(project_deps.get_project_id_by_document_id),
         Depends(auth_deps.is_project_participant),
     ],
 )
-def download_document(document_id: str):
-    return FileResponse(file_service.get_document(document_id))
+def download_document(
+    document_id: str,
+    document: document_models.Document = Depends(document_deps.get_document_by_id),
+):
+    return FileResponse(file_service.get_document(document.id), filename=document.name)
 
 
 @router.put(
