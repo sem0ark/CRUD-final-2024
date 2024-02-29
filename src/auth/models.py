@@ -26,3 +26,10 @@ class Permission(Base):
 
     user: Mapped["src.user.models.User"] = relationship(back_populates="projects")
     project: Mapped["src.project.models.Project"] = relationship(back_populates="users")
+
+    def __str__(self):
+        return f"PermissionModel[\
+user {self.user_id} is {self.type} of project {self.project_id}]"
+
+    def __repr__(self):
+        return self.__str__()

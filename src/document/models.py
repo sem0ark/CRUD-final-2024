@@ -21,3 +21,9 @@ class Document(Base):
     project: Mapped["src.project.models.Project"] = relationship(
         back_populates="documents"
     )
+
+    def __str__(self):
+        return f"DocumentModel[{self.id}, {self.name}]"
+
+    def __repr__(self):
+        return self.__str__()

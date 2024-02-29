@@ -22,3 +22,9 @@ class Project(Base):
     users: Mapped[list["src.auth.models.Permission"]] = relationship(
         back_populates="project"
     )
+
+    def __str__(self):
+        return f"ProjectModel[{self.id}, {self.name}, {self.description}]"
+
+    def __repr__(self):
+        return self.__str__()

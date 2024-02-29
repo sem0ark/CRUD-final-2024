@@ -17,3 +17,9 @@ class User(Base):
     projects: Mapped[list["src.auth.models.Permission"]] = relationship(
         back_populates="user"
     )
+
+    def __str__(self):
+        return f"UserModel[{self.id}; {self.login}]"
+
+    def __repr__(self):
+        return self.__str__()
