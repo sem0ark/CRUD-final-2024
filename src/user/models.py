@@ -1,7 +1,7 @@
 from sqlalchemy import Integer, String
 from sqlalchemy.orm import Mapped, mapped_column, relationship
 
-from src.permission.models import Permission
+import src.auth.models
 from src.shared.database import Base
 
 
@@ -14,4 +14,6 @@ class User(Base):
     )
     hashed_password: Mapped[str] = mapped_column(String(length=100), nullable=False)
 
-    projects: Mapped[list["Permission"]] = relationship(back_populates="user")
+    projects: Mapped[list["src.auth.models.Permission"]] = relationship(
+        back_populates="user"
+    )

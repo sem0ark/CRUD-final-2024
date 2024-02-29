@@ -11,9 +11,6 @@ test:
 	${RUN} ruff check ./src ./tests --fix
 	${RUN} pytest --cov=src tests/
 
-dev:
-	docker compose up -d db
-	${RUN} python -m src.main
 
 build:
 	docker build -t backend-image .
@@ -27,3 +24,9 @@ stop-compose:
 
 stop-compose-clear:
 	docker compose down --volumes --rmi=local
+
+
+dev:
+	make stop-compose-clear
+	make run-compose
+	docker compose logs web -f

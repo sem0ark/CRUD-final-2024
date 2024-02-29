@@ -1,11 +1,11 @@
 from asgi_correlation_id import CorrelationIdMiddleware
 from fastapi import FastAPI
 
-from src.document.endpoint import router as DocumentRouter
-from src.project.endpoint import router as ProjectRouter
+import src.document.endpoint as document_routes
+import src.project.endpoint as project_routes
+import src.user.endpoint as user_routes
 from src.shared.database import Base, engine
 from src.shared.logs import configure_logging
-from src.user.endpoint import router as UserRouter
 
 Base.metadata.create_all(bind=engine)
 
@@ -16,9 +16,9 @@ app = FastAPI(on_startup=[configure_logging])
 app.add_middleware(CorrelationIdMiddleware)
 # for request ID logging
 
-app.include_router(ProjectRouter)
-app.include_router(UserRouter)
-app.include_router(DocumentRouter)
+app.include_router(document_routes.router)
+app.include_router(project_routes.router)
+app.include_router(user_routes.router)
 
 
 @app.get("/test")

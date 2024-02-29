@@ -1,8 +1,11 @@
 from sqlalchemy import ForeignKey, Integer, String
 from sqlalchemy.orm import Mapped, mapped_column, relationship
 
-from src.project.model import Project
+import src.project.models
 from src.shared.database import Base
+
+# standard import to solve cyclyc import problem
+# https://stackoverflow.com/questions/5748946/pythonic-way-to-resolve-circular-import-statements
 
 
 class Document(Base):
@@ -15,4 +18,6 @@ class Document(Base):
         Integer, ForeignKey("projects.id"), nullable=False
     )
 
-    project: Mapped["Project"] = relationship(back_populates="documents")
+    project: Mapped["src.project.models.Project"] = relationship(
+        back_populates="documents"
+    )

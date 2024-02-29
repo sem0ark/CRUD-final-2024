@@ -2,7 +2,7 @@ from fastapi import Depends, HTTPException, UploadFile, status
 from sqlalchemy.orm import Session
 
 import src.document.dao as document_dao
-from src.document.dto import Document
+import src.document.models as document_models
 from src.shared.config import (
     ALLOWED_DOCUMENT_EXTENCIONS,
     ALLOWED_DOCUMENT_MIME_TYPES,
@@ -12,7 +12,9 @@ from src.shared.config import (
 from src.shared.database import get_db
 
 
-def get_document_by_id(document_id: str, db: Session = Depends(get_db)) -> Document:
+def get_document_by_id(
+    document_id: str, db: Session = Depends(get_db)
+) -> document_models.Document:
     db_document = document_dao.get_document_by_id(db, document_id)
     if not db_document:
         raise HTTPException(

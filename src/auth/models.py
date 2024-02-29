@@ -4,9 +4,9 @@ from sqlalchemy import ForeignKey, Integer
 from sqlalchemy.orm import Mapped, mapped_column, relationship
 from sqlalchemy.sql.sqltypes import Enum
 
-from src.project.model import Project
+import src.project.models
+import src.user.models
 from src.shared.database import Base
-from src.user.models import User
 
 
 class PermissionType(enum.Enum):
@@ -24,5 +24,5 @@ class Permission(Base):
 
     type: Mapped[str] = mapped_column(Enum(PermissionType), nullable=False)
 
-    user: Mapped["User"] = relationship(back_populates="projects")
-    project: Mapped["Project"] = relationship(back_populates="users")
+    user: Mapped["src.user.models.User"] = relationship(back_populates="projects")
+    project: Mapped["src.project.models.Project"] = relationship(back_populates="users")

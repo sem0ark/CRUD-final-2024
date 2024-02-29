@@ -1,7 +1,7 @@
 from pydantic import BaseModel, ConfigDict, Field
 
-from src.document.dto import Document, document
-from src.project.model import Project as ProjectModel
+import src.document.dto as document_dto
+import src.project.models as project_models
 
 
 class ProjectCreate(BaseModel):
@@ -20,7 +20,7 @@ class ProjectInfo(ProjectCreate):
 
 
 class Project(ProjectInfo):
-    documents: list[Document]
+    documents: list[document_dto.Document]
 
     model_config = ConfigDict(from_attributes=True)
 
@@ -29,7 +29,7 @@ class ProjectListing(BaseModel):
     projects: list[Project]
 
 
-def project(db_project: ProjectModel) -> Project:
+def project(db_project: project_models.Project) -> Project:
     project_documents = list(db_project.documents) if db_project.documents else []
 
     return Project(
@@ -37,13 +37,13 @@ def project(db_project: ProjectModel) -> Project:
         name=db_project.name,
         description=db_project.description,
         logo_id=db_project.logo_id,
-        documents=list(map(document, project_documents)),
+        documents=list(map(document_dto.document, project_documents)),
     )
 
 
 # TODO: search for a better solution of
 #   transforming SQLAlchemy model into Pydantic schema
-def project_info(db_project: ProjectModel) -> ProjectInfo:
+def project_info(db_project: project_models.Project) -> ProjectInfo:
     return ProjectInfo(
         id=db_project.id,
         name=db_project.name,

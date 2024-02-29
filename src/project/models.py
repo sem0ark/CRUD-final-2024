@@ -1,8 +1,9 @@
 from sqlalchemy import Integer, String, Text
 from sqlalchemy.orm import Mapped, mapped_column, relationship
 
-from src.document.model import Document
-from src.permission.models import Permission
+# changed to standard import to solve cyclyc imports problem
+import src.auth.models
+import src.document.models
 from src.shared.database import Base
 
 
@@ -15,5 +16,9 @@ class Project(Base):
 
     logo_id: Mapped[str] = mapped_column(String(length=255), nullable=True)
 
-    documents: Mapped[list["Document"]] = relationship(back_populates="project")
-    users: Mapped[list["Permission"]] = relationship(back_populates="project")
+    documents: Mapped["src.document.models.Document"] = relationship(
+        back_populates="project"
+    )
+    users: Mapped[list["src.auth.models.Permission"]] = relationship(
+        back_populates="project"
+    )

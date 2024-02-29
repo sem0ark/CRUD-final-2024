@@ -1,7 +1,6 @@
 from pydantic import BaseModel, ConfigDict, Field
 
-from src.document.dto import Document as DocumentSchema
-from src.document.model import Document as DocumentModel
+import src.document.models as document_models
 
 
 class DocumentCreate(BaseModel):
@@ -15,5 +14,5 @@ class Document(DocumentCreate):
     # replacement for pydantic 2, see documentation on ConfigDict
 
 
-def document(db_document: DocumentModel) -> DocumentSchema:
-    return DocumentSchema(id=db_document.id, name=db_document.name)
+def document(db_document: document_models.Document) -> Document:
+    return Document(id=db_document.id, name=db_document.name)
