@@ -15,6 +15,7 @@ from src.shared.database import get_db
 
 router = APIRouter(
     prefix="/project",
+    tags=["documents"],
     responses={404: {"description": "Not found"}},
 )
 

@@ -15,6 +15,7 @@ from src.shared.config import ACCESS_TOKEN_EXPIRE_MINUTES
 from src.shared.database import get_db
 
 router = APIRouter(
+    tags=["users"],
     responses={404: {"description": "Not found"}},
 )
 

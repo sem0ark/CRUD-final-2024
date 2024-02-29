@@ -14,6 +14,7 @@ echo "Running server"
 
 if [ "$DEV" = "1" ]
 then
+echo "Running in DEV mode"
 uvicorn src.main:app --host 0.0.0.0 --port 8000 --reload
 else
 uvicorn src.main:app --host 0.0.0.0 --port 8000

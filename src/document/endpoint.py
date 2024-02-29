@@ -13,6 +13,7 @@ from src.shared.database import get_db
 from src.shared.logs import log
 
 router = APIRouter(
+    tags=["documents"],
     responses={404: {"description": "Not found"}},
 )
 
