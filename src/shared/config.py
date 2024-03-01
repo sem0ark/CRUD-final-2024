@@ -4,7 +4,7 @@ from dotenv import load_dotenv
 
 # load information into environment variables
 # TODO: move configuration to Docker Secrets
-load_dotenv()
+load_dotenv(".env.test" if os.environ.get("TEST", False) else ".env")
 
 # used direct access, so in case env variable is not available, throw an error
 __postgres_user = os.environ["POSTGRES_USER"]
@@ -21,6 +21,10 @@ __postgres_db = os.environ["POSTGRES_DB"]
 SQLALCHEMY_DATABASE_URL: str = f"postgresql+psycopg2://{__postgres_user}:{__postgres_password}\
 @{__postgres_host}:{__postgres_port}/{__postgres_db}"
 
+SQLALCHEMY_TEST_DATABASE_URL: str = f"postgresql+psycopg2://{__postgres_user}:{__postgres_password}\
+@{__postgres_host}:{__postgres_port}/test"
+
+
 SECRET_KEY = os.environ["SECRET_KEY"]
 ALGORITHM = os.environ["ALGORITHM"]
 ACCESS_TOKEN_EXPIRE_MINUTES = 60
@@ -29,7 +33,6 @@ ACCESS_TOKEN_EXPIRE_MINUTES = 60
 FILE_FOLDER = os.path.join("/", "code", "files")
 
 ALLOWED_DOCUMENT_MIME_TYPES = [
-    "text/plain",  # .txt
     "application/pdf",  # .pdf
     "application/msword",  # .doc
     "application/vnd.openxmlformats-officedocument.wordprocessingml.document",  # .docx

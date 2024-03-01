@@ -1,4 +1,3 @@
-from datetime import timedelta
 from typing import Annotated
 
 from fastapi import APIRouter, Depends, HTTPException, status
@@ -10,8 +9,6 @@ import src.auth.dto as auth_dto
 import src.auth.utils as auth_utils
 import src.user.dao as user_dao
 import src.user.dto as user_dto
-import src.user.models as user_models
-from src.shared.config import ACCESS_TOKEN_EXPIRE_MINUTES
 from src.shared.database import get_db
 
 router = APIRouter(
@@ -20,7 +17,12 @@ router = APIRouter(
 )
 
 
-def login_user(user: user_models.User | None) -> auth_dto.Token:
+@router.post("/login_form")
+async def login_for_access_token_form(
+    sign_in: Annotated[OAuth2PasswordRequestForm, Depends()],
+    db: Session = Depends(get_db),
+) -> auth_dto.Token:
+    user = auth_dao.authenticate_user(db, sign_in.username, sign_in.password)
     if not user:
         raise HTTPException(
             status_code=status.HTTP_403_FORBIDDEN,
@@ -28,20 +30,7 @@ def login_user(user: user_models.User | None) -> auth_dto.Token:
             headers={"WWW-Authenticate": "Bearer"},
         )
 
-    access_token_expires = timedelta(minutes=ACCESS_TOKEN_EXPIRE_MINUTES)
-    access_token = auth_utils.create_access_token(
-        data={"sub": str(user.id)}, expires_delta=access_token_expires
-    )
-    return auth_dto.Token(access_token=access_token, token_type="bearer")
-
-
-@router.post("/login_form")
-async def login_for_access_token_form(
-    sign_in: Annotated[OAuth2PasswordRequestForm, Depends()],
-    db: Session = Depends(get_db),
-) -> auth_dto.Token:
-    user = auth_dao.authenticate_user(db, sign_in.username, sign_in.password)
-    return login_user(user)
+    return auth_utils.login_user(user)
 
 
 @router.post("/login")
@@ -50,7 +39,14 @@ async def login_for_access_token(
     db: Session = Depends(get_db),
 ) -> auth_dto.Token:
     user = auth_dao.authenticate_user(db, sign_in.login, sign_in.password)
-    return login_user(user)
+    if not user:
+        raise HTTPException(
+            status_code=status.HTTP_403_FORBIDDEN,
+            detail="Incorrect username or password",
+            headers={"WWW-Authenticate": "Bearer"},
+        )
+
+    return auth_utils.login_user(user)
 
 
 @router.post("/auth", response_model=user_dto.User)

@@ -18,6 +18,7 @@ env:
   POSTGRES_DB: ${{ secrets.POSTGRES_DB }}
   POSTGRES_PORT: 4352
   POSTGRES_HOST: "0.0.0.0"
+  RUN_LOCAL: 1
 
 jobs:
   ci:

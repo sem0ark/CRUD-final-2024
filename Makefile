@@ -9,7 +9,10 @@ test:
 	${RUN} ruff format ./src ./tests
 	${RUN} mypy ./src ./tests
 	${RUN} ruff check ./src ./tests --fix
-	export RUN_LOCAL='1' && ${RUN} pytest --cov=src tests/
+	# https://stackoverflow.com/questions/29377853/how-can-i-use-environment-variables-in-docker-compose
+	make stop-compose-clear-full
+	docker compose --env-file ./.env.test up -d db
+	export TEST='1' && ${RUN} pytest --cov=src tests/
 
 
 build:

@@ -1,26 +1,25 @@
 import os
 from pathlib import Path
-
-from fastapi import UploadFile
+from typing import IO
 
 from src.services import image_service
 from src.shared.config import FILE_FOLDER
 
 
-def save_document(in_file: UploadFile, id: str):
+def save_document(in_file: IO, id: str):
     path_to_file = get_document_path(id)
 
     # TODO: change to aiofile for asynchronous download
     with open(path_to_file, "wb") as f:
-        f.write(in_file.file.read())
+        f.write(in_file.read())
 
     return path_to_file
 
 
-def save_image(in_file: UploadFile, id: str):
+def save_image(in_file: IO, id: str):
     path_to_file = get_document_path(id)
 
-    image_service.resize_image(in_file.file, path_to_file)
+    image_service.resize_image(in_file, path_to_file)
 
     return path_to_file
 

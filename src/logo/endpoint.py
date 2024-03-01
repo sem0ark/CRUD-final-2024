@@ -52,7 +52,7 @@ def upload_project_logo(
 
     try:
         file_id = logo_dao.create_logo(db, project)
-        file_service.save_image(file, file_id)
+        file_service.save_image(file.file, file_id)
     except Exception as e:
         logo_dao.delete_logo(db, project)
         log.debug("Failed to update logo")

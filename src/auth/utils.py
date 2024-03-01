@@ -5,7 +5,10 @@ from fastapi.security import OAuth2PasswordBearer
 from jose import jwt
 from passlib.context import CryptContext
 
-from src.shared.config import ALGORITHM, SECRET_KEY
+import src.auth.dto as auth_dto
+import src.auth.utils as auth_utils
+import src.user.models as user_models
+from src.shared.config import ACCESS_TOKEN_EXPIRE_MINUTES, ALGORITHM, SECRET_KEY
 from src.shared.logs import log
 
 pwd_context = CryptContext(schemes=["bcrypt"])
@@ -35,3 +38,11 @@ def create_access_token(data: dict[str, Any], expires_delta: timedelta | None = 
     log.debug(f"Created new token until {expire}")
 
     return encoded_jwt
+
+
+def login_user(user: user_models.User) -> auth_dto.Token:
+    access_token_expires = timedelta(minutes=ACCESS_TOKEN_EXPIRE_MINUTES)
+    access_token = auth_utils.create_access_token(
+        data={"sub": str(user.id)}, expires_delta=access_token_expires
+    )
+    return auth_dto.Token(access_token=access_token, token_type="bearer")
