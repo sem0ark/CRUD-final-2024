@@ -121,7 +121,7 @@ def main_user_token_header(
     make_token: Callable[[str], user_models.User], main_user: user_models.User
 ) -> dict[str, str]:
     token = make_token(main_user)
-    return {"Authorization": f"{token.type} {token.access_token}"}
+    return {"Authorization": f"{token.token_type} {token.access_token}"}
 
 
 @pytest.fixture(scope="function")
@@ -141,7 +141,7 @@ def unauthorized_user_token_header(
     make_token: Callable[[str], user_models.User], unauthorized_user: user_models.User
 ) -> dict[str, str]:
     token = make_token(unauthorized_user)
-    return {"Authorization": f"{token.type} {token.access_token}"}
+    return {"Authorization": f"{token.token_type} {token.access_token}"}
 
 
 @pytest.fixture(scope="function")
@@ -168,7 +168,7 @@ def participant_user_token_header(
     make_token: Callable[[str], user_models.User], participant_user: user_models.User
 ) -> dict[str, str]:
     token = make_token(participant_user)
-    return {"Authorization": f"{token.type} {token.access_token}"}
+    return {"Authorization": f"{token.token_type} {token.access_token}"}
 
 
 # Test environment configuration
@@ -176,13 +176,16 @@ TOTAL_PROJECTS = 3
 
 
 @pytest.fixture(scope="function")
-def project_data(db: Session, user: user_models.User) -> list[project_models.Project]:
+def project_data(
+    db: Session, main_user: user_models.User
+) -> list[project_models.Project]:
     project_schemas = [
         project_dto.ProjectCreate(name=f"Testing Project ({i})")
         for i in range(1, TOTAL_PROJECTS + 1)
     ]
     return [
-        project_dao.create_project(db, project, user) for project in project_schemas
+        project_dao.create_project(db, project, main_user)
+        for project in project_schemas
     ]
 
 

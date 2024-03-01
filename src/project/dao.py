@@ -8,6 +8,25 @@ import src.user.models as user_models
 from src.shared.logs import log
 
 
+def get_project(db: Session, project_id: int) -> project_models.Project | None:
+    return db.get(project_models.Project, project_id)
+
+
+def get_accessible_projects(
+    db: Session,
+    user_id: int,
+    limit: int = 10,
+    offset: int = 0,
+) -> list[project_models.Project] | None:
+    log.debug(f"Finding accessible projects from user: id='{user_id}'")
+    user = user_dao.get_user(db, user_id)
+
+    if not user:
+        return None
+
+    return [assoc.project for assoc in user.projects][offset : offset + limit]
+
+
 def create_project(
     db: Session, project: project_dto.ProjectCreate, owner: user_models.User
 ):
@@ -31,33 +50,6 @@ name='{project.name}', description='{project.description}'"
     db.commit()
     db.refresh(db_project)
     return db_project
-
-
-def get_project_role(
-    db: Session, project_id: int, user_id: int
-) -> auth_models.Permission | None:
-    return db.query(auth_models.Permission).get(
-        {"user_id": user_id, "project_id": project_id}
-    )
-
-
-def get_accessible_projects(
-    db: Session,
-    user_id: int,
-    limit: int = 10,
-    offset: int = 0,
-) -> list[project_models.Project] | None:
-    log.debug(f"Finding accessible projects from user: id='{user_id}'")
-    user = user_dao.get_user(db, user_id)
-
-    if not user:
-        return None
-
-    return [assoc.project for assoc in user.projects][offset : offset + limit]
-
-
-def get_project(db: Session, project_id: int) -> project_models.Project | None:
-    return db.query(project_models.Project).get(project_id)
 
 
 def update_project(

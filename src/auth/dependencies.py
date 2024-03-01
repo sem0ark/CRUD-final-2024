@@ -1,8 +1,8 @@
 from fastapi import Depends, HTTPException, status
 from sqlalchemy.orm import Session
 
+import src.auth.dao as auth_dao
 import src.auth.models as auth_models
-import src.project.dao as project_dao
 import src.user.dependencies as user_deps
 import src.user.models as user_models
 from src.shared.database import get_db
@@ -17,7 +17,7 @@ def project_role(
     db: Session = Depends(get_db),
     current_user: user_models.User = Depends(user_deps.get_current_user),
 ) -> auth_models.Permission:
-    project_role = project_dao.get_project_role(db, project_id, current_user.id)
+    project_role = auth_dao.get_project_role(db, project_id, current_user.id)
 
     if not project_role:
         raise HTTPException(

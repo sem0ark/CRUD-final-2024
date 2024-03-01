@@ -6,7 +6,7 @@ import src.user.models as user_models
 
 
 def get_user(db: Session, user_id: int) -> user_models.User | None:
-    return db.query(user_models.User).get(user_id)
+    return db.get(user_models.User, user_id)
 
 
 def get_user_by_login(db: Session, login: str) -> user_models.User | None:

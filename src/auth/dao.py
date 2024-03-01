@@ -37,3 +37,11 @@ def authenticate_user(db: Session, login: str, password: str):
         return False
     log.debug("Authentication successed")
     return user
+
+
+def get_project_role(
+    db: Session, project_id: int, user_id: int
+) -> auth_models.Permission | None:
+    return db.get(
+        auth_models.Permission, {"user_id": user_id, "project_id": project_id}
+    )
