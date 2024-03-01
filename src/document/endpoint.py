@@ -74,7 +74,6 @@ def download_document(
 @router.put(
     "/document/{document_id}",
     dependencies=[
-        Depends(auth_deps.is_project_participant),
         Depends(document_deps.is_document),
     ],
 )
@@ -82,8 +81,13 @@ def reupload_document(
     document_id: str,
     file: UploadFile,
     document: document_models.Document = Depends(document_deps.get_document_by_id),
-    db=Depends(get_db),
+    db: Session = Depends(get_db),
+    current_user: user_models.User = Depends(user_deps.get_current_user),
 ):
+    auth_deps.is_project_participant(
+        auth_deps.project_role(document.project_id, db, current_user)
+    )
+
     file_name = file.filename
     if not file_name:
         file_name = document.name

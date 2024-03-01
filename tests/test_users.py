@@ -1,3 +1,4 @@
+import pytest
 from fastapi.testclient import TestClient
 
 import src.project.models
@@ -13,16 +14,44 @@ def test_user_create_cannot_make_same_login(
     assert res.status_code == 403
 
 
+@pytest.mark.parametrize(
+    "login, password",
+    [
+        ("some user login", "123456"),
+        (" some 123 Lo0in ", "123456"),
+        ("some", "123456"),
+    ],
+)
 def test_user_create(
+    login: str,
+    password: str,
     client: TestClient,
 ):
-    data = {"login": "some user login", "password": "123456"}
+    data = {"login": login, "password": password}
     res = client.post("/auth", json=data)
     assert res.status_code == 201
     assert res.json() == {
         "id": res.json()["id"],
-        "login": data["login"],
+        "login": login,
     }
+
+
+@pytest.mark.parametrize(
+    "login, password",
+    [
+        ("some user login", ""),
+        ("something", "12s"),
+        ("some", "asd"),
+    ],
+)
+def test_user_create_fails(
+    login: str,
+    password: str,
+    client: TestClient,
+):
+    data = {"login": login, "password": password}
+    res = client.post("/auth", json=data)
+    assert res.status_code == 422
 
 
 def test_user_login(
@@ -38,3 +67,22 @@ def test_user_login(
             "access_token": res.json()["access_token"],
             "token_type": "bearer",
         }
+
+
+@pytest.mark.parametrize(
+    "login, password",
+    [
+        ("some", "asdqweqwe"),
+        ("some", "asd12846987"),
+        ("main_test_user", "asd12846987"),
+    ],
+)
+def test_user_login_fails(
+    login: str,
+    password: str,
+    client: TestClient,
+):
+    data = {"login": login, "password": password}
+    res = client.post("/login", json=data)
+
+    assert res.status_code == 403

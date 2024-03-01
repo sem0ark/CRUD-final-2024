@@ -2,6 +2,7 @@ from io import BytesIO
 from typing import Callable, Generator
 
 import pytest
+from fastapi import UploadFile
 from fastapi.testclient import TestClient
 from sqlalchemy import create_engine
 from sqlalchemy import text as sa_text
@@ -11,6 +12,7 @@ import src.auth.dao as auth_dao
 import src.auth.dto as auth_dto
 import src.auth.utils as auth_utils
 import src.document.dao as document_dao
+import src.document.models as document_models
 import src.project.dao as project_dao
 import src.project.dto as project_dto
 import src.project.models as project_models
@@ -269,8 +271,6 @@ def project_data_list(
 
 @pytest.fixture(scope="function")
 def project_data(
-    db: Session,
-    main_user: user_models.User,
     project_data_list: list[project_models.Project],
 ) -> project_models.Project:
     return project_data_list[0]
@@ -278,14 +278,42 @@ def project_data(
 
 @pytest.fixture(scope="function")
 def document_data(
-    db: Session, project: project_models.Project
-) -> list[project_models.Project]:
+    db: Session, project_data: project_models.Project
+) -> Generator[document_models.Document, None, None]:
     document = BytesIO(b"Testing Document (1)")
     document_name = "some Data 123.pdf"
-    document_objects = []
 
-    db_document = document_dao.create_document(db, project, document_name)
+    db_document = document_dao.create_document(db, project_data, document_name)
     file_service.save_document(document, db_document.id)
-    document_objects.append(db_document)
 
-    return document_objects
+    yield db_document
+
+    file_service.delete_document_by_id(db_document.id)
+    document_dao.delete_document(db, db_document.id)
+
+
+# files
+
+
+@pytest.fixture(scope="session")
+def good_upload_file():
+    document = BytesIO(b"Testing Document (1)")
+    document_name = "some Data 123.pdf"
+    upload_file = UploadFile(file=document, filename=document_name)
+    return upload_file
+
+
+@pytest.fixture(scope="session")
+def good_upload_file_2():
+    document = BytesIO(b"Testing Document (2)")
+    document_name = "some Data 124.pdf"
+    upload_file = UploadFile(file=document, filename=document_name)
+    return upload_file
+
+
+@pytest.fixture(scope="session")
+def bad_upload_file():
+    document = BytesIO(b"Some document cotents")
+    document_name = "important document.txt"
+    upload_file = UploadFile(file=document, filename=document_name)
+    return upload_file

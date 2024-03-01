@@ -30,7 +30,11 @@ ALGORITHM = os.environ["ALGORITHM"]
 ACCESS_TOKEN_EXPIRE_MINUTES = 60
 
 # we direct to folders from the config location
-FILE_FOLDER = os.path.join("/", "code", "files")
+FILE_FOLDER = (
+    os.path.join("/", "code", "files")
+    if not os.environ.get("RUN_LOCAL", False)
+    else os.path.join(os.path.dirname(os.path.abspath(__file__)), "..", "..", "files")
+)
 
 ALLOWED_DOCUMENT_MIME_TYPES = [
     "application/pdf",  # .pdf

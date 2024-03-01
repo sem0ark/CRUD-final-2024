@@ -10,7 +10,7 @@ import src.project.models as project_models
 def get_document_by_id(
     db: Session, document_id: str
 ) -> document_models.Document | None:
-    return db.query(document_models.Document).get(document_id)
+    return db.get(document_models.Document, document_id)
 
 
 def create_document(
