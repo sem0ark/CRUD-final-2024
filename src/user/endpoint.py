@@ -49,7 +49,7 @@ async def login_for_access_token(
     return auth_utils.login_user(user)
 
 
-@router.post("/auth", response_model=user_dto.User)
+@router.post("/auth", response_model=user_dto.User, status_code=status.HTTP_201_CREATED)
 async def create_user(
     user: user_dto.UserCreate, db: Session = Depends(get_db)
 ) -> user_dto.User:

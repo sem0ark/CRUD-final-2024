@@ -148,10 +148,10 @@ def unauthorized_user_token_header(
 def participant_user(
     make_user: Callable[[str], user_models.User],
     db: Session,
-    project_data: list[project_models.Project],
+    project_data_list: list[project_models.Project],
 ) -> auth_dto.Token:
     participant = make_user("participant_test_user")
-    for project in project_data:
+    for project in project_data_list:
         auth_dao.grant_access_to_user(db, project, participant)
     return participant
 
@@ -171,12 +171,90 @@ def participant_user_token_header(
     return {"Authorization": f"{token.token_type} {token.access_token}"}
 
 
+@pytest.fixture(scope="function")
+def authorized_users(
+    db: Session,
+    main_user: user_models.User,
+    participant_user: user_models.User,
+) -> list[user_models.User]:
+    return [
+        main_user,
+        participant_user,
+    ]
+
+
+@pytest.fixture(scope="function")
+def authorized_users_token(
+    make_token: Callable[[str], user_models.User],
+    main_user_token: auth_dto.Token,
+    participant_user_token: auth_dto.Token,
+) -> list[auth_dto.Token]:
+    return [
+        main_user_token,
+        participant_user_token,
+    ]
+
+
+@pytest.fixture(scope="function")
+def authorized_users_token_header(
+    make_token: Callable[[str], user_models.User],
+    main_user_token_header: dict[str, str],
+    participant_user_token_header: dict[str, str],
+) -> list[dict[str, str]]:
+    return [
+        main_user_token_header,
+        participant_user_token_header,
+    ]
+
+
+@pytest.fixture(scope="function")
+def all_users(
+    db: Session,
+    main_user: user_models.User,
+    participant_user: user_models.User,
+    unauthorized_user: user_models.User,
+) -> list[user_models.User]:
+    return [
+        main_user,
+        participant_user,
+        unauthorized_user,
+    ]
+
+
+@pytest.fixture(scope="function")
+def all_users_token(
+    make_token: Callable[[str], user_models.User],
+    main_user_token: auth_dto.Token,
+    participant_user_token: auth_dto.Token,
+    unauthorized_user_token: auth_dto.Token,
+) -> list[auth_dto.Token]:
+    return [
+        main_user_token,
+        participant_user_token,
+        unauthorized_user_token,
+    ]
+
+
+@pytest.fixture(scope="function")
+def all_users_token_header(
+    make_token: Callable[[str], user_models.User],
+    main_user_token_header: dict[str, str],
+    participant_user_token_header: dict[str, str],
+    unauthorized_user_token_header: dict[str, str],
+) -> list[dict[str, str]]:
+    return [
+        main_user_token_header,
+        participant_user_token_header,
+        unauthorized_user_token_header,
+    ]
+
+
 # Test environment configuration
 TOTAL_PROJECTS = 3
 
 
 @pytest.fixture(scope="function")
-def project_data(
+def project_data_list(
     db: Session, main_user: user_models.User
 ) -> list[project_models.Project]:
     project_schemas = [
@@ -187,6 +265,15 @@ def project_data(
         project_dao.create_project(db, project, main_user)
         for project in project_schemas
     ]
+
+
+@pytest.fixture(scope="function")
+def project_data(
+    db: Session,
+    main_user: user_models.User,
+    project_data_list: list[project_models.Project],
+) -> project_models.Project:
+    return project_data_list[0]
 
 
 @pytest.fixture(scope="function")

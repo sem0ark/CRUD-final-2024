@@ -29,7 +29,7 @@ def get_accessible_projects(
 
 def create_project(
     db: Session, project: project_dto.ProjectCreate, owner: user_models.User
-):
+) -> project_models.Project:
     log.debug(
         f"Creating a project with values: \
 name='{project.name}', description='{project.description}'"
