@@ -101,9 +101,16 @@ def reupload_document(
 
 @router.delete(
     "/document/{document_id}",
-    dependencies=[Depends(auth_deps.is_project_owner)],
     status_code=status.HTTP_204_NO_CONTENT,
 )
-def delete_document(document_id: str, db: Session = Depends(get_db)):
+def delete_document(
+    document_id: str,
+    document: document_models.Document = Depends(document_deps.get_document_by_id),
+    db: Session = Depends(get_db),
+    current_user: user_models.User = Depends(user_deps.get_current_user),
+):
+    auth_deps.is_project_owner(
+        auth_deps.project_role(document.project_id, db, current_user)
+    )
     document_dao.delete_document(db, document_id)
     file_service.delete_document_by_id(document_id)

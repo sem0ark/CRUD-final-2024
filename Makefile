@@ -12,7 +12,7 @@ test:
 	# https://stackoverflow.com/questions/29377853/how-can-i-use-environment-variables-in-docker-compose
 	make stop-compose-clear-full
 	docker compose --env-file ./.env.test up -d db
-	export TEST='1' && ${RUN} pytest --cov=src tests/ -vv
+	export TEST='1' && ${RUN} pytest --cov=src tests/ -vv -o log_cli=true
 
 
 build:

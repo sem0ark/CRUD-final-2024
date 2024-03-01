@@ -1,3 +1,4 @@
+import os
 from io import BytesIO
 from typing import Callable, Generator
 
@@ -13,16 +14,18 @@ import src.auth.dto as auth_dto
 import src.auth.utils as auth_utils
 import src.document.dao as document_dao
 import src.document.models as document_models
+import src.logo.dao as logo_dao
 import src.project.dao as project_dao
 import src.project.dto as project_dto
 import src.project.models as project_models
+import src.services.file_service as file_service
 import src.user.dao as user_dao
 import src.user.dto as user_dto
 import src.user.models as user_models
 from src.main import app
-from src.services import file_service
 from src.shared.config import SQLALCHEMY_TEST_DATABASE_URL
 from src.shared.database import get_db
+from src.shared.logs import log
 
 engine = create_engine(SQLALCHEMY_TEST_DATABASE_URL)
 TestSession = sessionmaker(autocommit=False, autoflush=False, bind=engine)
@@ -288,8 +291,11 @@ def document_data(
 
     yield db_document
 
-    file_service.delete_document_by_id(db_document.id)
-    document_dao.delete_document(db, db_document.id)
+    try:
+        file_service.delete_document_by_id(db_document.id)
+        document_dao.delete_document(db, db_document.id)
+    except FileNotFoundError:
+        log.warning("Failed to remove the document from the fixture")
 
 
 # files
@@ -316,4 +322,29 @@ def bad_upload_file():
     document = BytesIO(b"Some document cotents")
     document_name = "important document.txt"
     upload_file = UploadFile(file=document, filename=document_name)
+    return upload_file
+
+
+# logos
+image_path = os.path.join(os.path.dirname(os.path.abspath(__file__)), "sample.jpg")
+
+
+@pytest.fixture(scope="function")
+def logo_file(
+    project_data: project_models.Project,
+    db: Session,
+) -> Generator[str, None, None]:
+    logo_id = logo_dao.create_logo(db, project_data)
+    file_service.save_image(open(image_path, "rb"), logo_id)
+    yield logo_id
+    try:
+        file_service.delete_document_by_id(logo_id)
+        logo_dao.delete_logo(db, project_data)
+    except FileNotFoundError:
+        log.warning("Failed to remove the logo from the fixture")
+
+
+@pytest.fixture(scope="session")
+def good_upload_logo():
+    upload_file = UploadFile(file=open(image_path, "rb"), filename="sample.jpg")
     return upload_file

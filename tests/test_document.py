@@ -201,3 +201,64 @@ def test_update_document_unauthorized(
     )
 
     assert res.status_code == 401
+
+
+def test_get_document_unauthorized(
+    client: TestClient,
+    document_data: src.document.models.Document,
+    unauthorized_user_token_header: dict[str, str],
+):
+    res = client.get(
+        f"/document/{document_data.id}", headers=unauthorized_user_token_header
+    )
+    assert res.status_code == 401
+
+
+def test_get_document_authorized(
+    client: TestClient,
+    document_data: src.document.models.Document,
+    authorized_users_token_header: list[dict[str, str]],
+):
+    for user_header in authorized_users_token_header:
+        res = client.get(f"/document/{document_data.id}", headers=user_header)
+        assert res.status_code == 200
+
+
+def test_delete_document_unauthorized(
+    client: TestClient,
+    document_data: src.document.models.Document,
+    unauthorized_user_token_header: dict[str, str],
+):
+    res = client.delete(
+        f"/document/{document_data.id}", headers=unauthorized_user_token_header
+    )
+    assert res.status_code == 401
+
+
+def test_delete_document_participant(
+    client: TestClient,
+    document_data: src.document.models.Document,
+    participant_user_token_header: dict[str, str],
+):
+    res = client.delete(
+        f"/document/{document_data.id}", headers=participant_user_token_header
+    )
+    assert res.status_code == 401
+
+
+def test_delete_document_failed(
+    client: TestClient,
+    document_data: src.document.models.Document,
+    main_user_token_header: dict[str, str],
+):
+    res = client.delete("/document/1237989127398", headers=main_user_token_header)
+    assert res.status_code == 404
+
+
+def test_delete_document_owner(
+    client: TestClient,
+    document_data: src.document.models.Document,
+    main_user_token_header: dict[str, str],
+):
+    res = client.delete(f"/document/{document_data.id}", headers=main_user_token_header)
+    assert res.status_code == 204
