@@ -22,6 +22,7 @@ def grant_access_to_user(
     except IntegrityError:
         log.debug(f"Failed to grant access to user {user.login}, access already exists")
         db.rollback()
+        db.commit()
         return None
     return project
 

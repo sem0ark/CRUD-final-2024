@@ -36,27 +36,35 @@ TestSession = sessionmaker(autocommit=False, autoflush=False, bind=engine)
 
 
 def get_test_db() -> Generator[Session, None, None]:
-    db = TestSession()
+    session = TestSession()
     try:
-        yield db
+        yield session
+        session.commit()
+        session.flush()
+    except Exception:
+        session.rollback()
     finally:
-        db.close()
+        session.close()
 
 
 app.dependency_overrides[get_db] = get_test_db
 
 
-@pytest.fixture(scope="module")
+@pytest.fixture(scope="session")
 def client():
     c = TestClient(app)
     yield c
 
 
-@pytest.fixture(scope="module")
+@pytest.fixture(scope="function")
 def db() -> Generator[Session, None, None]:
     session = TestSession()
     try:
         yield session
+        session.commit()
+        session.flush()
+    except Exception:
+        session.rollback()
     finally:
         session.close()
 
@@ -79,7 +87,7 @@ def truncate_table(db: Session) -> None:
 # Authentication configuration
 
 
-@pytest.fixture(scope="module")
+@pytest.fixture(scope="function")
 def make_user(db: Session) -> Callable[[str], user_models.User]:
     def factory(login: str) -> user_models.User:
         db_user = user_dao.create_user(
@@ -98,7 +106,7 @@ def make_user(db: Session) -> Callable[[str], user_models.User]:
     return factory
 
 
-@pytest.fixture(scope="module")
+@pytest.fixture(scope="function")
 def make_token() -> Callable[[user_models.User], auth_dto.Token]:
     def factory(user: user_models.User) -> auth_dto.Token:
         return auth_utils.login_user(user)
@@ -301,7 +309,7 @@ def document_data(
 # files
 
 
-@pytest.fixture(scope="session")
+@pytest.fixture(scope="function")
 def good_upload_file():
     document = BytesIO(b"Testing Document (1)")
     document_name = "some Data 123.pdf"
@@ -309,7 +317,7 @@ def good_upload_file():
     return upload_file
 
 
-@pytest.fixture(scope="session")
+@pytest.fixture(scope="function")
 def good_upload_file_2():
     document = BytesIO(b"Testing Document (2)")
     document_name = "some Data 124.pdf"
@@ -317,7 +325,7 @@ def good_upload_file_2():
     return upload_file
 
 
-@pytest.fixture(scope="session")
+@pytest.fixture(scope="function")
 def bad_upload_file():
     document = BytesIO(b"Some document cotents")
     document_name = "important document.txt"
@@ -344,7 +352,7 @@ def logo_file(
         log.warning("Failed to remove the logo from the fixture")
 
 
-@pytest.fixture(scope="session")
+@pytest.fixture(scope="function")
 def good_upload_logo():
     upload_file = UploadFile(file=open(image_path, "rb"), filename="sample.jpg")
     return upload_file

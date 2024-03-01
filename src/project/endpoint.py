@@ -110,7 +110,7 @@ async def grant_project_access(
     project = auth_dao.grant_access_to_user(db, project, user)
     if not project:
         raise HTTPException(
-            status_code=status.HTTP_400_BAD_REQUEST,
+            status_code=status.HTTP_422_UNPROCESSABLE_ENTITY,
             detail="Permission is already granted",
         )
     return {"message": f"Grated user '{user.login}' access to project '{project.name}'"}

@@ -153,3 +153,54 @@ def test_delete_project_unauthorized(
     )
 
     assert res.status_code == 401
+
+
+def test_project_invite_authorized(
+    client: TestClient,
+    main_user_token_header: dict[str, str],
+    unauthorized_user: src.user.models.User,
+    project_data: src.project.models.Project,
+):
+    res = client.post(
+        f"/project/{project_data.id}/invite",
+        headers=main_user_token_header,
+        params={
+            "login": unauthorized_user.login,
+        },
+    )
+
+    assert res.status_code == 201
+
+
+def test_project_invite_participant(
+    client: TestClient,
+    participant_user_token_header: dict[str, str],
+    unauthorized_user: src.user.models.User,
+    project_data: src.project.models.Project,
+):
+    res = client.post(
+        f"/project/{project_data.id}/invite",
+        headers=participant_user_token_header,
+        params={
+            "login": unauthorized_user.login,
+        },
+    )
+
+    assert res.status_code == 401
+
+
+def test_project_invite_unauthorized(
+    client: TestClient,
+    unauthorized_user_token_header: dict[str, str],
+    unauthorized_user: src.user.models.User,
+    project_data: src.project.models.Project,
+):
+    res = client.post(
+        f"/project/{project_data.id}/invite",
+        headers=unauthorized_user_token_header,
+        params={
+            "login": unauthorized_user.login,
+        },
+    )
+
+    assert res.status_code == 401
