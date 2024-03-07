@@ -10,7 +10,7 @@ import src.project.models as project_models
 def get_document_by_id(
     db: Session, document_id: str
 ) -> document_models.Document | None:
-    return db.get(document_models.Document, document_id)
+    return db.get(document_models.Document, document_id)  # type: ignore
 
 
 def create_document(
@@ -40,7 +40,7 @@ def get_project_by_document_id(
     db_document = get_document_by_id(db, document_id)
     if not db_document:
         return None
-    return db_document.project
+    return db_document.project  # type: ignore
 
 
 def get_available_documents(

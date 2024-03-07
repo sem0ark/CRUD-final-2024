@@ -35,7 +35,7 @@ def is_project_owner(
     log.debug("User is trying to access owner-role action")
 
     if project_role.type != auth_models.PermissionType.owner:
-        log.debug("User failed to access owner-role action")
+        log.info("User failed to access owner-role action")
         raise HTTPException(
             status_code=status.HTTP_401_UNAUTHORIZED,
             detail="You are not the project owner",

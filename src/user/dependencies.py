@@ -41,8 +41,7 @@ def get_current_user(
             raise credentials_exception
 
         token_data = auth_dto.TokenData(user_id=user_id)
-    except JWTError as e:
-        log.debug(e)
+    except JWTError:  # default error handling for checking the JWT
         raise credentials_exception from None
         # B904 raise exceptions with `raise ... from None`
         # to distinguish them from errors in exception handlin

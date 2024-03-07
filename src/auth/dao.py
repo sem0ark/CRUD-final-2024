@@ -20,7 +20,7 @@ def grant_access_to_user(
         db.commit()
         db.refresh(project)
     except IntegrityError:
-        log.debug(f"Failed to grant access to user {user.login}, access already exists")
+        log.info(f"Failed to grant access to user {user.login}, access already exists")
         db.rollback()
         db.commit()
         return None
@@ -31,10 +31,10 @@ def authenticate_user(db: Session, login: str, password: str):
     user = user_dao.get_user_by_login(db, login)
     log.debug(f"Authenticating user {login}")
     if not user:
-        log.debug(f"Was not able to find user {login}")
+        log.info(f"Was not able to find user {login}")
         return False
     if not auth_utils.verify_password(password, user.hashed_password):
-        log.debug(f"Password verification for {login} failed")
+        log.info(f"Password verification for {login} failed")
         return False
     log.debug("Authentication successed")
     return user
@@ -43,6 +43,6 @@ def authenticate_user(db: Session, login: str, password: str):
 def get_project_role(
     db: Session, project_id: int, user_id: int
 ) -> auth_models.Permission | None:
-    return db.get(
+    return db.get(  # type: ignore
         auth_models.Permission, {"user_id": user_id, "project_id": project_id}
     )

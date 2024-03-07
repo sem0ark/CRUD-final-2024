@@ -47,16 +47,16 @@ def upload_project_logo(
         try:
             file_service.delete_document_by_id(project.logo_id)
         except FileNotFoundError as e:
-            log.debug(f"Failed to delete file {project.logo_id}")
-            log.debug(e)
+            log.error(f"Failed to delete file {project.logo_id}")
+            log.error(e)
 
     try:
         file_id = logo_dao.create_logo(db, project)
         file_service.save_image(file.file, file_id)
     except Exception as e:
         logo_dao.delete_logo(db, project)
-        log.debug("Failed to update logo")
-        log.debug(e)
+        log.error("Failed to update logo")
+        log.error(e)
 
         raise HTTPException(
             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
@@ -80,8 +80,8 @@ def delete_logo(
         file_service.delete_document_by_id(project.logo_id)
         logo_dao.delete_logo(db, project)
     except FileNotFoundError as e:
-        log.debug(f"Failed to delete file {project.logo_id}")
-        log.debug(e)
+        log.error(f"Failed to delete file {project.logo_id}")
+        log.error(e)
 
         raise HTTPException(
             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,

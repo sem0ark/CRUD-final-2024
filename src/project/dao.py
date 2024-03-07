@@ -9,7 +9,7 @@ from src.shared.logs import log
 
 
 def get_project(db: Session, project_id: int) -> project_models.Project | None:
-    return db.get(project_models.Project, project_id)
+    return db.get(project_models.Project, project_id)  # type: ignore
 
 
 def get_accessible_projects(

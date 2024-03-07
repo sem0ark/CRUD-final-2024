@@ -7,7 +7,7 @@ lint:
 
 test:
 	${RUN} ruff format ./src ./tests
-	${RUN} mypy ./src ./tests
+	mypy ./src ./tests
 	${RUN} ruff check ./src ./tests --fix
 	# https://stackoverflow.com/questions/29377853/how-can-i-use-environment-variables-in-docker-compose
 	make stop-compose-clear-full
@@ -33,5 +33,11 @@ stop-compose-clear-full:
 
 dev:
 	make stop-compose-clear-full
-	make run-compose
+	docker compose up -d db
+	docker compose up -d web
+	docker compose logs web -f
+
+dev-cloud:
+	make stop-compose-clear-full
+	docker compose up -d web
 	docker compose logs web -f

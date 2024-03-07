@@ -39,7 +39,7 @@ WORKDIR /code
 RUN chmod +x /code/entrypoint.sh && \
     addgroup --system --gid 1001 app && \
     adduser  --system -h /code --uid 1001 --group app && \
-    mkdir -p /code/files && chown -R 1001:1001 /code/files
+    mkdir -p /code/files/documents && mkdir -p /code/files/logos && chown -R 1001:1001 /code/files
 USER 1001
 
 ENTRYPOINT ["/bin/bash", "entrypoint.sh"]

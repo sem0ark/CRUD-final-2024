@@ -18,8 +18,8 @@ __postgres_host = (
 __postgres_db = os.environ["POSTGRES_DB"]
 
 # "postgres+psycopg2://<USERNAME>:<PASSWORD>@<IP_ADDRESS>:<PORT>/<DATABASE_NAME>"
-SQLALCHEMY_DATABASE_URL: str = f"postgresql+psycopg2://{__postgres_user}:{__postgres_password}\
-@{__postgres_host}:{__postgres_port}/{__postgres_db}"
+SQLALCHEMY_DATABASE_URL: str = f"postgresql+psycopg2://{__postgres_user}:{__postgres_password}@{__postgres_host}:{__postgres_port}/{__postgres_db}"
+
 
 SQLALCHEMY_TEST_DATABASE_URL: str = f"postgresql+psycopg2://{__postgres_user}:{__postgres_password}\
 @{__postgres_host}:{__postgres_port}/test"
@@ -35,6 +35,9 @@ FILE_FOLDER = (
     if not os.environ.get("RUN_LOCAL", False)
     else os.path.join(os.path.dirname(os.path.abspath(__file__)), "..", "..", "files")
 )
+
+DOCUMENT_FOLDER = os.path.join(FILE_FOLDER, "documents")
+LOGO_FOLDER = os.path.join(FILE_FOLDER, "logos")
 
 ALLOWED_DOCUMENT_MIME_TYPES = [
     "application/pdf",  # .pdf

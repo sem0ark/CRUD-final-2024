@@ -1,14 +1,13 @@
 #!/bin/bash
 
-echo "Waiting for postgres..."
-
-while ! nc -z db $POSTGRES_PORT; do
-  sleep 0.1
-done
+# echo "Waiting for postgres..."
+# while ! nc -z db $POSTGRES_PORT; do
+#   sleep 0.1
+# done
 echo "PostgreSQL started"
 
 echo "Running migrations"
-alembic upgrade head
+# alembic upgrade head
 
 echo "Running server"
 

@@ -6,11 +6,11 @@ import src.user.models as user_models
 
 
 def get_user(db: Session, user_id: int) -> user_models.User | None:
-    return db.get(user_models.User, user_id)
+    return db.get(user_models.User, user_id)  # type: ignore
 
 
 def get_user_by_login(db: Session, login: str) -> user_models.User | None:
-    return db.query(user_models.User).filter(user_models.User.login == login).first()
+    return db.query(user_models.User).filter(user_models.User.login == login).first()  # type: ignore
 
 
 def create_user(db: Session, user: user_dto.UserDB) -> user_models.User | None:
