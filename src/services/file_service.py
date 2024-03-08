@@ -1,40 +1,25 @@
-import os
-from pathlib import Path
-from typing import IO
-
-from src.services import image_service
-from src.shared.config import FILE_FOLDER
-
-
-def save_document(in_file: IO, id: str):
-    path_to_file = get_document_path(id)
-
-    # TODO: change to aiofile for asynchronous download
-    with open(path_to_file, "wb") as f:
-        f.write(in_file.read())
-
-    return path_to_file
+import src.services.aws.file_service as aws
+import src.services.local.file_service as local
+from src.shared.config import (
+    DOCUMENT_FOLDER,
+    LOGO_FOLDER,
+    RUN_CLOUD,
+    RUN_CONTAINER,
+    RUN_LOCAL,
+)
 
 
-def save_image(in_file: IO, id: str):
-    path_to_file = get_document_path(id)
+def init_file_service(folder: str) -> local.LocalFileService | aws.AWSFileService:
+    if RUN_LOCAL or RUN_CONTAINER:
+        return local.LocalFileService(folder)
+    if RUN_CLOUD:
+        return aws.AWSFileService(folder)
 
-    image_service.resize_image(in_file, path_to_file)
-
-    return path_to_file
-
-
-def get_document_path(id: str):
-    return Path(os.path.join(FILE_FOLDER, id))
-
-
-def delete_document_by_id(id: str):
-    os.remove(get_document(id))
+    raise ValueError(
+        "Failed to define correct service for file handling,\
+ please define RUN_LOCAL, RUN_CONTAINER or RUN_CLOUD."
+    )
 
 
-def delete_file(destination: str):
-    os.remove(destination)
-
-
-def get_document(id: str):
-    return os.path.join(FILE_FOLDER, id)
+documents = init_file_service(DOCUMENT_FOLDER)
+logos = init_file_service(LOGO_FOLDER)

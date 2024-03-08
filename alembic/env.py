@@ -1,34 +1,14 @@
-import os
 from logging.config import fileConfig
 
-from dotenv import load_dotenv
 from sqlalchemy import engine_from_config, pool
 
 from alembic import context
-
-# load information into environment variables
-# TODO: move configuration to Docker Secrets
-load_dotenv()
-
-# used direct access, so in case env variable is not available, throw an error
-__postgres_user = os.environ["POSTGRES_USER"]
-__postgres_password = os.environ["POSTGRES_PASSWORD"]
-__postgres_port = os.environ["POSTGRES_PORT"]
-__postgres_host = (
-    os.environ["POSTGRES_HOST"]
-    if not os.environ.get("RUN_LOCAL", False)
-    else "localhost"
-)
-__postgres_db = os.environ["POSTGRES_DB"]
-
+from src.shared.config import SQLALCHEMY_DATABASE_URL
 
 # this is the Alembic Config object, which provides
 # access to the values within the .ini file in use.
 config = context.config
 
-# "postgres+psycopg2://<USERNAME>:<PASSWORD>@<IP_ADDRESS>:<PORT>/<DATABASE_NAME>"
-SQLALCHEMY_DATABASE_URL: str = f"postgresql+psycopg2://{__postgres_user}:{__postgres_password}\
-@{__postgres_host}:{__postgres_port}/{__postgres_db}"
 config.set_main_option("sqlalchemy.url", SQLALCHEMY_DATABASE_URL)
 
 # Interpret the config file for Python logging.

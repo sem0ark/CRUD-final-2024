@@ -23,11 +23,11 @@ import src.user.dao as user_dao
 import src.user.dto as user_dto
 import src.user.models as user_models
 from src.main import app
-from src.shared.config import SQLALCHEMY_TEST_DATABASE_URL
+from src.shared.config import SQLALCHEMY_DATABASE_URL
 from src.shared.database import get_db
 from src.shared.logs import log
 
-engine = create_engine(SQLALCHEMY_TEST_DATABASE_URL)
+engine = create_engine(SQLALCHEMY_DATABASE_URL)
 TestSession = sessionmaker(autocommit=False, autoflush=False, bind=engine)
 # instance will be the session
 
@@ -295,13 +295,13 @@ def document_data(
     document_name = "some Data 123.pdf"
 
     db_document = document_dao.create_document(db, project_data, document_name)
-    file_service.save_document(document, db_document.id)
+    file_service.documents.save_file(document, db_document.id)
 
     yield db_document
 
     try:
-        file_service.delete_document_by_id(db_document.id)
         document_dao.delete_document(db, db_document.id)
+        file_service.documents.delete_file_by_id(db_document.id)
     except FileNotFoundError:
         log.warning("Failed to remove the document from the fixture")
 
@@ -343,11 +343,11 @@ def logo_file(
     db: Session,
 ) -> Generator[str, None, None]:
     logo_id = logo_dao.create_logo(db, project_data)
-    file_service.save_image(open(image_path, "rb"), logo_id)
+    file_service.logos.save_file(open(image_path, "rb"), logo_id)
     yield logo_id
     try:
-        file_service.delete_document_by_id(logo_id)
         logo_dao.delete_logo(db, project_data)
+        file_service.logos.delete_file_by_id(logo_id)
     except FileNotFoundError:
         log.warning("Failed to remove the logo from the fixture")
 

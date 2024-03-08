@@ -175,3 +175,6 @@ cython_debug/
 
 # tmp files
 *.svg
+
+# local aws config
+.aws/

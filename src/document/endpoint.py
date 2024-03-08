@@ -51,7 +51,7 @@ def upload_document(
 ):
     # filename can be None, so replace with default value of document's ID
     db_document = document_dao.create_document(db, project, file.filename)
-    file_service.save_document(file.file, db_document.id)
+    file_service.documents.save_file(file.file, db_document.id)
 
     return db_document
 
@@ -68,7 +68,9 @@ def download_document(
     auth_deps.is_project_participant(
         auth_deps.project_role(document.project_id, db, current_user)
     )
-    return FileResponse(file_service.get_document(document.id), filename=document.name)
+    return FileResponse(
+        file_service.documents.get_file_path(document.id), filename=document.name
+    )
 
 
 @router.put(
@@ -93,8 +95,7 @@ def reupload_document(
         file_name = document.name
 
     db_document = document_dao.update_document(db, document, file_name)
-    file_service.delete_document_by_id(db_document.id)
-    file_service.save_document(file.file, db_document.id)
+    file_service.documents.save_file(file.file, db_document.id)
 
     return db_document
 
@@ -113,4 +114,4 @@ def delete_document(
         auth_deps.project_role(document.project_id, db, current_user)
     )
     document_dao.delete_document(db, document_id)
-    file_service.delete_document_by_id(document_id)
+    file_service.documents.delete_file_by_id(document_id)

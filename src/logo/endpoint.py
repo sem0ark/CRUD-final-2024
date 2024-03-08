@@ -6,7 +6,7 @@ import src.document.dependencies as document_deps
 import src.logo.dao as logo_dao
 import src.project.dependencies as project_deps
 import src.project.models as project_models
-from src.services import file_service
+from src.services.file_service import logos
 from src.shared.database import Session, get_db
 from src.shared.logs import log
 
@@ -27,7 +27,7 @@ def download_project_logo(
         raise HTTPException(
             status_code=status.HTTP_404_NOT_FOUND, detail="Project does not have a logo"
         )
-    return FileResponse(file_service.get_document(project.logo_id), filename="logo.jpg")
+    return FileResponse(logos.get_file_path(project.logo_id), filename="logo.jpg")
 
 
 @router.put(
@@ -45,14 +45,14 @@ def upload_project_logo(
 ) -> None:
     if project.logo_id is not None:  # if exists, remove previous image
         try:
-            file_service.delete_document_by_id(project.logo_id)
+            logos.delete_file_by_id(project.logo_id)
         except FileNotFoundError as e:
             log.error(f"Failed to delete file {project.logo_id}")
             log.error(e)
 
     try:
         file_id = logo_dao.create_logo(db, project)
-        file_service.save_image(file.file, file_id)
+        logos.save_file(file.file, file_id)
     except Exception as e:
         logo_dao.delete_logo(db, project)
         log.error("Failed to update logo")
@@ -77,7 +77,7 @@ def delete_logo(
         return
 
     try:
-        file_service.delete_document_by_id(project.logo_id)
+        logos.delete_file_by_id(project.logo_id)
         logo_dao.delete_logo(db, project)
     except FileNotFoundError as e:
         log.error(f"Failed to delete file {project.logo_id}")
