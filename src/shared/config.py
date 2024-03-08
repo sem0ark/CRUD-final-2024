@@ -40,20 +40,27 @@ ACCESS_TOKEN_EXPIRE_MINUTES = 60
 
 # we direct to folders from the config location
 FILE_FOLDER = ""
+TMP_FOLDER = ""
+DOCUMENT_FOLDER = ""
+LOGO_FOLDER = ""
 
 if RUN_LOCAL:
     FILE_FOLDER = os.path.join(
         os.path.dirname(os.path.abspath(__file__)), "..", "..", "files"
     )
+    DOCUMENT_FOLDER = os.path.join(FILE_FOLDER, "documents")
+    LOGO_FOLDER = os.path.join(FILE_FOLDER, "logos")
 
 if RUN_CONTAINER:
     FILE_FOLDER = os.path.join("/", "code", "files")
+    DOCUMENT_FOLDER = os.path.join(FILE_FOLDER, "documents")
+    LOGO_FOLDER = os.path.join(FILE_FOLDER, "logos")
 
 if RUN_CLOUD:
     FILE_FOLDER = os.environ["S3_BUCKET"]
-
-DOCUMENT_FOLDER = os.path.join(FILE_FOLDER, "documents")
-LOGO_FOLDER = os.path.join(FILE_FOLDER, "logos")
+    DOCUMENT_FOLDER = "documents"
+    LOGO_FOLDER = "logos"
+    TMP_FOLDER = os.path.join("/", "code", "files")
 
 
 # File processing

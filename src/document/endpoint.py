@@ -69,7 +69,7 @@ def download_document(
         auth_deps.project_role(document.project_id, db, current_user)
     )
     return FileResponse(
-        file_service.documents.get_file_path(document.id), filename=document.name
+        file_service.documents.download_file(document.id), filename=document.name
     )
 
 

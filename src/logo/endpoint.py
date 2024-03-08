@@ -27,7 +27,7 @@ def download_project_logo(
         raise HTTPException(
             status_code=status.HTTP_404_NOT_FOUND, detail="Project does not have a logo"
         )
-    return FileResponse(logos.get_file_path(project.logo_id), filename="logo.jpg")
+    return FileResponse(logos.download_file(project.logo_id), filename="logo.jpg")
 
 
 @router.put(

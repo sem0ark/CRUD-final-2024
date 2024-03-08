@@ -41,6 +41,9 @@ class LocalFileService:
 
         return path_to_file
 
+    def download_file(self, id: str):
+        return self.get_file_path(id)
+
     def delete_file_by_id(self, id: str):
         os.remove(self.get_file_path(id))
 
