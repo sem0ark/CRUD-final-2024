@@ -35,8 +35,8 @@ services:
       DEV: 1
     ports:
       - "80:8000"
-    volumes:
-      - ./src:/code/src
+    # volumes:
+    #   - ./src:/code/src
     healthcheck:
       test: ["CMD-SHELL", "curl", "http://0.0.0.0:8000/test"]
       interval: 30s

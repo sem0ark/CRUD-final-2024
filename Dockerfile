@@ -32,6 +32,7 @@ RUN poetry install --only=main --no-interaction --no-ansi
 # COPY ./src /code/src
 COPY entrypoint.sh ./alembic.ini /code
 COPY ./alembic /code/alembic
+COPY ./src /code/src
 WORKDIR /code
 
 # Use Unprivileged Containers
