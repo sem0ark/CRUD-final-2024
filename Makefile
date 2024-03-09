@@ -18,9 +18,11 @@ test:
 build:
 	docker build -t backend-image .
 
+
 run-compose:
 	docker compose up -d db
 	docker compose up -d web
+
 
 stop-compose:
 	docker compose stop
@@ -31,13 +33,20 @@ stop-compose-clear:
 stop-compose-clear-full:
 	docker compose down --volumes --rmi=local
 
-dev:
+
+dev-container:
 	make stop-compose-clear-full
 	docker compose up -d db
 	docker compose up -d web
 	docker compose logs web -f
 
+dev-local:
+	make stop-compose
+	docker compose up -d db
+	poetry run uvicorn src.main:app --host "0.0.0.0" --port 8000 --reload
+
 dev-cloud:
 	make stop-compose-clear-full
-	docker compose up -d web
+	docker compose --env-file ./.env up -d db
+	docker compose --env-file ./.env up -d web
 	docker compose logs web -f

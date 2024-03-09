@@ -51,7 +51,7 @@ def upload_document(
 ):
     # filename can be None, so replace with default value of document's ID
     db_document = document_dao.create_document(db, project, file.filename)
-    file_service.documents.save_file(file.file, db_document.id)
+    file_service.documents.save_file(file.file, db_document.id, file.content_type)
 
     return db_document
 
@@ -95,7 +95,7 @@ def reupload_document(
         file_name = document.name
 
     db_document = document_dao.update_document(db, document, file_name)
-    file_service.documents.save_file(file.file, db_document.id)
+    file_service.documents.save_file(file.file, db_document.id, file.content_type)
 
     return db_document
 

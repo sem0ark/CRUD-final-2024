@@ -32,7 +32,8 @@ services:
       POSTGRES_DB: ${POSTGRES_DB}
       SECRET_KEY: ${SECRET_KEY}
       ALGORITHM: ${ALGORITHM}
-      DEV: 1
+      # RUN_CONTAINER: 1
+      # RUN_CLOUD: 1
     ports:
       - "80:8000"
     # volumes:

@@ -32,7 +32,7 @@ class LocalFileService:
     def __init__(self, folder):
         self.folder = folder
 
-    def save_file(self, in_file: IO, id: str):
+    def save_file(self, in_file: IO, id: str, content_type: str | None = None):
         path_to_file = Path(self.get_file_path(id))
 
         # TODO: change to aiofile for asynchronous download

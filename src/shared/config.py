@@ -11,10 +11,9 @@ load_dotenv(".env.test" if RUN_TEST else ".env")
 
 # General config
 
-RUN_LOCAL = bool(os.environ.get("RUN_LOCAL", False))
-RUN_CONTAINER = bool(os.environ.get("RUN_CONTAINER", False))  # run in the container
-RUN_CLOUD = bool(os.environ.get("RUN_CLOUD", False))  # run in the container
-
+RUN_LOCAL = os.environ.get("RUN_LOCAL", False)
+RUN_CONTAINER = os.environ.get("RUN_CONTAINER", False)  # run in the container
+RUN_CLOUD = os.environ.get("RUN_CLOUD", False)  # run in the container
 
 # Database
 
@@ -44,6 +43,10 @@ TMP_FOLDER = ""
 DOCUMENT_FOLDER = ""
 LOGO_FOLDER = ""
 
+AWS_ID = os.environ.get("aws_access_key_id", "")
+AWS_SECRET = os.environ.get("aws_secret_access_key", "")
+AWS_REGION = os.environ.get("aws_region", "")
+
 if RUN_LOCAL:
     FILE_FOLDER = os.path.join(
         os.path.dirname(os.path.abspath(__file__)), "..", "..", "files"
@@ -51,16 +54,25 @@ if RUN_LOCAL:
     DOCUMENT_FOLDER = os.path.join(FILE_FOLDER, "documents")
     LOGO_FOLDER = os.path.join(FILE_FOLDER, "logos")
 
+
 if RUN_CONTAINER:
     FILE_FOLDER = os.path.join("/", "code", "files")
     DOCUMENT_FOLDER = os.path.join(FILE_FOLDER, "documents")
     LOGO_FOLDER = os.path.join(FILE_FOLDER, "logos")
 
+
 if RUN_CLOUD:
     FILE_FOLDER = os.environ["S3_BUCKET"]
     DOCUMENT_FOLDER = "documents"
     LOGO_FOLDER = "logos"
-    TMP_FOLDER = os.path.join("/", "code", "files")
+
+    if RUN_LOCAL:
+        TMP_FOLDER = os.path.join(
+            os.path.dirname(os.path.abspath(__file__)), "..", "..", "files"
+        )
+
+    if RUN_CONTAINER:
+        TMP_FOLDER = os.path.join("/", "code", "files")
 
 
 # File processing

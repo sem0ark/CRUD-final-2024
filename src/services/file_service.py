@@ -8,13 +8,20 @@ from src.shared.config import (
     RUN_CONTAINER,
     RUN_LOCAL,
 )
+from src.shared.logs import log
 
 
 def init_file_service(folder: str) -> local.LocalFileService | aws.AWSFileService:
-    if RUN_LOCAL or RUN_CONTAINER:
-        return local.LocalFileService(folder)
+    log.warning(
+        f"received RUN_LOCAL={RUN_LOCAL} \
+RUN_CONTAINER={RUN_CONTAINER} RUN_CLOUD={RUN_CLOUD}"
+    )
+
     if RUN_CLOUD:
         return aws.AWSFileService(folder, FILE_FOLDER)
+
+    if RUN_LOCAL or RUN_CONTAINER:
+        return local.LocalFileService(folder)
 
     raise ValueError(
         "Failed to define correct service for file handling,\
