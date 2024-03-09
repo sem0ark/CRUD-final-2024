@@ -46,8 +46,12 @@ class AWSFileService:
         )
 
     def delete_file_by_id(self, id: str):
-        log.debug(f"Deleting file {id} from {self.get_file_path(id)}")
-        self.s3.delete_object(Bucket=self.bucket, Key=self.get_file_path(id))
+        log.debug(
+            f"Deleting file {id} from {self.get_file_path(id, self.source_folder)}"
+        )
+        self.s3.delete_object(
+            Bucket=self.bucket, Key=self.get_file_path(id, self.source_folder)
+        )
 
     def download_file(self, id: str):
         # Use couple characters of the UUID to achieve tmp storage to send back the file

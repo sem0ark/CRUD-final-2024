@@ -5,8 +5,44 @@ on:
     tags:
       - v[0-9]+
 
+env:
+  AWS_REGION: eu-north-1
+
 jobs:
-  push-docker-hub:
+  push-lambda:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check out the repo
+        uses: actions/checkout@v4
+
+      - name: Install Python
+        uses: actions/setup-python@v4
+        with:
+          python-verion: "3.10"
+          cache: "pip"
+
+      - name: Build lambda function
+        run: |
+          mkdir lambda/update_image/package && \
+          pip install \
+            --platform manylinux2014_x86_64 \
+            --target=lambda/update_image/package \
+            --implementation cp \
+            --python-version 3.10 \
+            --only-binary=:all: --upgrade pillow boto3 && \
+          cd lambda/update_image/package && zip -9 -r ../../../update_image.zip . && cd .. && zip ../../update_image.zip lambda_function.py && cd ../..
+
+      - name: Build lambda function
+        uses: appleboy/lambda-action@v0.1.9
+        with:
+          aws_access_key_id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          aws_secret_access_key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          aws_region: ${{ env.AWS_REGION }}
+          function_name: update_image
+          zip_file: update_image.zip
+          runtime: python3.10
+
+  push-ecs:
     runs-on: ubuntu-latest
     steps:
       - name: Check out the repo
@@ -32,3 +68,18 @@ jobs:
           push: true
           tags: ${{ steps.meta.outputs.tags }}
           labels: ${{ steps.meta.outputs.labels }}
+
+      - name: Configure AWS credentials
+        uses: aws-actions/configure-aws-credentials@0e613a0980cbf65ed5b322eb7a1e075d28913a83
+        with:
+          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          aws-region: ${{ env.AWS_REGION }}
+
+      - name: Deploy Amazon ECS task definition
+        uses: aws-actions/amazon-ecs-deploy-task-definition@df9643053eda01f169e64a0e60233aacca83799a
+        with:
+          task-definition: ${{ steps.task-def.outputs.task-definition }}
+          service: crud-web-app
+          cluster:
+          wait-for-service-stability: true

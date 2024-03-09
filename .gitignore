@@ -178,3 +178,8 @@ cython_debug/
 
 # local aws config
 .aws/
+
+
+/lambda/*/package
+!/lambda/*/*.py
+*.zip

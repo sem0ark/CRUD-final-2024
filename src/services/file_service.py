@@ -34,4 +34,4 @@ RUN_CONTAINER={RUN_CONTAINER} RUN_CLOUD={RUN_CLOUD}"
 
 
 documents = init_file_service(DOCUMENT_FOLDER)
-logos = init_file_service(LOGO_FOLDER, False)
+logos = init_file_service(LOGO_FOLDER, True)
