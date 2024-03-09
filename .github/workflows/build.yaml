@@ -7,6 +7,8 @@ on:
 
 env:
   AWS_REGION: eu-north-1
+  AWS_TASK_FAMILY: crud-app-web
+  AWS_CLUSTER: eu-north-1-web-cluster
 
 jobs:
   push-lambda:
@@ -42,6 +44,7 @@ jobs:
           zip_file: update_image.zip
           runtime: python3.10
 
+  # https://github.com/marketplace/actions/amazon-ecs-deploy-task-definition-action-for-github-actions
   push-ecs:
     runs-on: ubuntu-latest
     steps:
@@ -76,10 +79,14 @@ jobs:
           aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
           aws-region: ${{ env.AWS_REGION }}
 
+      - name: Download task definition
+        run: |
+          aws ecs describe-task-definition --task-definition ${{ env.AWS_TASK_FAMILY }} --query taskDefinition > task-definition.json
+
       - name: Deploy Amazon ECS task definition
         uses: aws-actions/amazon-ecs-deploy-task-definition@df9643053eda01f169e64a0e60233aacca83799a
         with:
-          task-definition: ${{ steps.task-def.outputs.task-definition }}
-          service: crud-web-app
-          cluster:
+          task-definition: task-definition.json
+          service: ${{ env.AWS_TASK_FAMILY }}
+          cluster: ${{ env.AWS_CLUSTER }}
           wait-for-service-stability: true
