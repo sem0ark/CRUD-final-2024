@@ -43,23 +43,9 @@ TMP_FOLDER = ""
 DOCUMENT_FOLDER = ""
 LOGO_FOLDER = ""
 
-AWS_ID = os.environ.get("aws_access_key_id", "")
-AWS_SECRET = os.environ.get("aws_secret_access_key", "")
-AWS_REGION = os.environ.get("aws_region", "")
-
-if RUN_LOCAL:
-    FILE_FOLDER = os.path.join(
-        os.path.dirname(os.path.abspath(__file__)), "..", "..", "files"
-    )
-    DOCUMENT_FOLDER = os.path.join(FILE_FOLDER, "documents")
-    LOGO_FOLDER = os.path.join(FILE_FOLDER, "logos")
-
-
-if RUN_CONTAINER:
-    FILE_FOLDER = os.path.join("/", "code", "files")
-    DOCUMENT_FOLDER = os.path.join(FILE_FOLDER, "documents")
-    LOGO_FOLDER = os.path.join(FILE_FOLDER, "logos")
-
+AWS_ID = os.environ.get("aws_access_key_id", None)
+AWS_SECRET = os.environ.get("aws_secret_access_key", None)
+AWS_REGION = os.environ.get("aws_region", None)
 
 if RUN_CLOUD:
     FILE_FOLDER = os.environ["S3_BUCKET"]
@@ -73,6 +59,16 @@ if RUN_CLOUD:
 
     if RUN_CONTAINER:
         TMP_FOLDER = os.path.join("/", "code", "files")
+elif RUN_LOCAL:
+    FILE_FOLDER = os.path.join(
+        os.path.dirname(os.path.abspath(__file__)), "..", "..", "files"
+    )
+    DOCUMENT_FOLDER = os.path.join(FILE_FOLDER, "documents")
+    LOGO_FOLDER = os.path.join(FILE_FOLDER, "logos")
+elif RUN_CONTAINER:
+    FILE_FOLDER = os.path.join("/", "code", "files")
+    DOCUMENT_FOLDER = os.path.join(FILE_FOLDER, "documents")
+    LOGO_FOLDER = os.path.join(FILE_FOLDER, "logos")
 
 
 # File processing

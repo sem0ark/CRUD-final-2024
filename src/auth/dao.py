@@ -13,6 +13,9 @@ def grant_access_to_user(
     db: Session, project: project_models.Project, user: user_models.User
 ):
     log.debug(f"Giving {user.login} access to project [{project.id}]")
+    if get_project_role(db, project.id, user.id):
+        return None
+
     try:
         a = auth_models.Permission(type=auth_models.PermissionType.participant)
         a.user = user

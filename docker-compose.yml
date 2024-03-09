@@ -32,8 +32,12 @@ services:
       POSTGRES_DB: ${POSTGRES_DB}
       SECRET_KEY: ${SECRET_KEY}
       ALGORITHM: ${ALGORITHM}
-      # RUN_CONTAINER: 1
-      # RUN_CLOUD: 1
+      RUN_CONTAINER: 1
+      S3_BUCKET: ${S3_BUCKET}
+      aws_access_key_id: ${aws_access_key_id}
+      aws_secret_access_key: ${aws_secret_access_key}
+      aws_region: ${aws_region}
+      RUN_CLOUD: 1
     ports:
       - "80:8000"
     # volumes:

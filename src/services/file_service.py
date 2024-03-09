@@ -11,13 +11,17 @@ from src.shared.config import (
 from src.shared.logs import log
 
 
-def init_file_service(folder: str) -> local.LocalFileService | aws.AWSFileService:
+def init_file_service(
+    folder: str, used_processing: bool = False
+) -> local.LocalFileService | aws.AWSFileService:
     log.warning(
         f"received RUN_LOCAL={RUN_LOCAL} \
 RUN_CONTAINER={RUN_CONTAINER} RUN_CLOUD={RUN_CLOUD}"
     )
 
     if RUN_CLOUD:
+        if used_processing:
+            return aws.AWSFileService(folder, FILE_FOLDER, folder + "-processed")
         return aws.AWSFileService(folder, FILE_FOLDER)
 
     if RUN_LOCAL or RUN_CONTAINER:
@@ -30,4 +34,4 @@ RUN_CONTAINER={RUN_CONTAINER} RUN_CLOUD={RUN_CLOUD}"
 
 
 documents = init_file_service(DOCUMENT_FOLDER)
-logos = init_file_service(LOGO_FOLDER)
+logos = init_file_service(LOGO_FOLDER, False)

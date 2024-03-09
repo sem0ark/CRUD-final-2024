@@ -20,8 +20,16 @@ def get_s3():
 
 
 class AWSFileService:
-    def __init__(self, folder, bucket):
+    def __init__(self, folder, bucket, source_folder: str | None = None):
         self.folder = folder
+
+        # bucket folder where the files will be actually stored after processing
+        # e.g. where the updated file will be put by AWS Lambda
+        if source_folder:
+            self.source_folder = source_folder
+        else:
+            self.source_folder = folder
+
         self.bucket = bucket
         self.s3 = get_s3()
 
@@ -46,8 +54,12 @@ class AWSFileService:
         # and avoid potential collisions
         download_path = os.path.join(TMP_FOLDER, id[:2])
         log.debug(f"Downloading file {id} to {download_path}")
-        self.s3.download_file(self.bucket, self.get_file_path(id), download_path)
+        self.s3.download_file(
+            self.bucket, self.get_file_path(id, self.source_folder), download_path
+        )
         return download_path
 
-    def get_file_path(self, id: str) -> str:
-        return f"{self.folder}/{id}"
+    def get_file_path(self, id: str, folder=None) -> str:
+        if folder is None:
+            return f"{self.folder}/{id}"
+        return f"{folder}/{id}"
