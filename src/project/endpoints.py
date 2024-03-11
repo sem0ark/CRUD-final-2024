@@ -3,8 +3,6 @@ from typing import Annotated
 from fastapi import APIRouter, Depends, HTTPException, Query, status
 from sqlalchemy.orm import Session
 
-import src.auth.dao as auth_dao
-import src.auth.dependencies as auth_deps
 import src.project.dao as project_dao
 import src.project.dependencies as project_deps
 import src.project.dto as project_dto
@@ -35,8 +33,8 @@ async def create_project(
 async def get_accessible_projects(
     db: Session = Depends(get_db),
     user: user_models.User = Depends(user_deps.get_current_user),
-    limit: int = Query(default=10),
-    offset: int = Query(default=0),
+    limit: int = Query(default=100, ge=0),
+    offset: int = Query(default=0, ge=0),
 ):
     accessible_projects = project_dao.get_accessible_projects(
         db, user.id, limit, offset
@@ -52,7 +50,7 @@ async def get_accessible_projects(
 @router.get(
     "/{project_id}",
     response_model=project_dto.Project,
-    dependencies=[Depends(auth_deps.is_project_participant)],
+    dependencies=[Depends(project_deps.is_project_participant)],
 )
 async def read_project(
     project_id: int,
@@ -64,7 +62,7 @@ async def read_project(
 @router.put(
     "/{project_id}",
     response_model=project_dto.Project,
-    dependencies=[Depends(auth_deps.is_project_participant)],
+    dependencies=[Depends(project_deps.is_project_participant)],
 )
 async def update_project(
     project: project_dto.ProjectUpdate,
@@ -85,7 +83,7 @@ async def update_project(
 @router.delete(
     "/{project_id}",
     dependencies=[
-        Depends(auth_deps.is_project_owner),
+        Depends(project_deps.is_project_owner),
         Depends(project_deps.get_project_by_id),
     ],
     status_code=status.HTTP_204_NO_CONTENT,
@@ -96,7 +94,7 @@ async def delete_project(project_id: int, db: Session = Depends(get_db)):
 
 @router.post(
     "/{project_id}/invite",
-    dependencies=[Depends(auth_deps.is_project_owner)],
+    dependencies=[Depends(project_deps.is_project_owner)],
     status_code=status.HTTP_201_CREATED,
 )
 async def grant_project_access(
@@ -107,7 +105,7 @@ async def grant_project_access(
     user: user_models.User = Depends(user_deps.get_user_by_login),
     project: project_models.Project = Depends(project_deps.get_project_by_id),
 ):
-    project = auth_dao.grant_access_to_user(db, project, user)
+    project = project_dao.grant_access_to_user(db, project, user)
     if not project:
         raise HTTPException(
             status_code=status.HTTP_422_UNPROCESSABLE_ENTITY,

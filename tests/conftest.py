@@ -9,7 +9,6 @@ from sqlalchemy import create_engine
 from sqlalchemy import text as sa_text
 from sqlalchemy.orm import Session, sessionmaker
 
-import src.auth.dao as auth_dao
 import src.auth.dto as auth_dto
 import src.auth.utils as auth_utils
 import src.document.dao as document_dao
@@ -165,7 +164,7 @@ def participant_user(
 ) -> auth_dto.Token:
     participant = make_user("participant_test_user")
     for project in project_data_list:
-        auth_dao.grant_access_to_user(db, project, participant)
+        project_dao.grant_access_to_user(db, project, participant)
     return participant
 
 

@@ -1,7 +1,6 @@
 from fastapi import APIRouter, Depends, Query, UploadFile, status
 from fastapi.responses import FileResponse
 
-import src.auth.dependencies as auth_deps
 import src.document.dao as document_dao
 import src.document.dependencies as document_deps
 import src.document.dto as document_dto
@@ -20,14 +19,14 @@ router = APIRouter(
 
 @router.get(
     "/project/{project_id}/documents",
-    dependencies=[Depends(auth_deps.is_project_participant)],
+    dependencies=[Depends(project_deps.is_project_participant)],
     response_model=list[document_dto.Document],
 )
 def get_available_documents(
     project_id: int,
     db: Session = Depends(get_db),
-    limit: int = Query(default=10),
-    offset: int = Query(default=0),
+    limit: int = Query(default=10, ge=0),
+    offset: int = Query(default=0, ge=0),
 ):
     documents = document_dao.get_available_documents(db, project_id, limit, offset)
     if documents is None:
@@ -38,7 +37,7 @@ def get_available_documents(
 @router.post(
     "/project/{project_id}/documents",
     dependencies=[
-        Depends(auth_deps.is_project_participant),
+        Depends(project_deps.is_project_participant),
         Depends(document_deps.is_document),
     ],
     response_model=document_dto.Document,
@@ -65,8 +64,8 @@ def download_document(
     db: Session = Depends(get_db),
     current_user: user_models.User = Depends(user_deps.get_current_user),
 ):
-    auth_deps.is_project_participant(
-        auth_deps.project_role(document.project_id, db, current_user)
+    project_deps.is_project_participant(
+        project_deps.project_role(document.project_id, db, current_user)
     )
     return FileResponse(
         file_service.documents.download_file(document.id), filename=document.name
@@ -86,8 +85,8 @@ def reupload_document(
     db: Session = Depends(get_db),
     current_user: user_models.User = Depends(user_deps.get_current_user),
 ):
-    auth_deps.is_project_participant(
-        auth_deps.project_role(document.project_id, db, current_user)
+    project_deps.is_project_participant(
+        project_deps.project_role(document.project_id, db, current_user)
     )
 
     file_name = file.filename
@@ -110,8 +109,8 @@ def delete_document(
     db: Session = Depends(get_db),
     current_user: user_models.User = Depends(user_deps.get_current_user),
 ):
-    auth_deps.is_project_owner(
-        auth_deps.project_role(document.project_id, db, current_user)
+    project_deps.is_project_owner(
+        project_deps.project_role(document.project_id, db, current_user)
     )
     document_dao.delete_document(db, document_id)
     file_service.documents.delete_file_by_id(document_id)

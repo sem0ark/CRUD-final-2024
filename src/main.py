@@ -1,10 +1,10 @@
 from asgi_correlation_id import CorrelationIdMiddleware
 from fastapi import FastAPI
 
-import src.document.endpoint as document_routes
-import src.logo.endpoint as logo_routes
-import src.project.endpoint as project_routes
-import src.user.endpoint as user_routes
+import src.document.endpoints as document_routes
+import src.logo.endpoints as logo_routes
+import src.project.endpoints as project_routes
+import src.user.endpoints as user_routes
 from src.shared.database import Base, engine
 from src.shared.logs import configure_logging
 

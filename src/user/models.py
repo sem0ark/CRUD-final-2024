@@ -15,7 +15,7 @@ class User(Base, BaseTimestamp):
     )
     hashed_password: Mapped[str] = mapped_column(String(length=100), nullable=False)
 
-    projects: Mapped[list["src.auth.models.Permission"]] = relationship(
+    projects: Mapped[list["src.project.models.Permission"]] = relationship(
         back_populates="user"
     )
 

@@ -1,6 +1,6 @@
 from typing import Generator
 
-from sqlalchemy import create_engine
+from sqlalchemy import Select, create_engine, func, select
 from sqlalchemy.orm import Session, declarative_base, sessionmaker
 
 from src.shared.config import SQLALCHEMY_DATABASE_URL
@@ -20,3 +20,10 @@ def get_db() -> Generator[Session, None, None]:
     finally:
         db.close()
     # This way we make sure the database session is always closed after the request.
+
+
+def paginate(session: Session, query: Select, limit: int, offset: int) -> dict:
+    return {
+        "count": session.scalar(select(func.count()).select_from(query.subquery())),
+        "items": list(session.scalars(query.limit(limit).offset(offset))),
+    }

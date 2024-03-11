@@ -1,6 +1,6 @@
+from sqlalchemy.exc import IntegrityError
 from sqlalchemy.orm import Session
 
-import src.auth.models as auth_models
 import src.project.dto as project_dto
 import src.project.models as project_models
 import src.user.dao as user_dao
@@ -26,7 +26,7 @@ def get_accessible_projects(
 
     return [
         permission.project
-        for permission in db.query(auth_models.Permission)
+        for permission in db.query(project_models.Permission)
         .filter_by(user_id=user_id)
         .limit(limit)
         .offset(offset)
@@ -51,7 +51,7 @@ name='{project.name}', description='{project.description}'"
     log.debug(
         f"Adding the creator to the project: login='{owner.login}', id='{owner.id}'"
     )
-    a = auth_models.Permission(type=auth_models.PermissionType.owner)
+    a = project_models.Permission(type=project_models.PermissionType.owner)
     a.user = owner
     db_project.users.append(a)
     db.commit()
@@ -79,3 +79,32 @@ def update_project(
 def delete_project(db: Session, project_id: int) -> None:
     db_project = get_project(db, project_id)
     db.delete(db_project)
+
+
+def get_project_role(
+    db: Session, project_id: int, user_id: int
+) -> project_models.Permission | None:
+    return db.get(  # type: ignore
+        project_models.Permission, {"user_id": user_id, "project_id": project_id}
+    )
+
+
+def grant_access_to_user(
+    db: Session, project: project_models.Project, user: user_models.User
+):
+    log.debug(f"Giving {user.login} access to project [{project.id}]")
+    if get_project_role(db, project.id, user.id):
+        return None
+
+    try:
+        a = project_models.Permission(type=project_models.PermissionType.participant)
+        a.user = user
+        project.users.append(a)
+        db.commit()
+        db.refresh(project)
+    except IntegrityError:
+        log.info(f"Failed to grant access to user {user.login}, access already exists")
+        db.rollback()
+        db.commit()
+        return None
+    return project

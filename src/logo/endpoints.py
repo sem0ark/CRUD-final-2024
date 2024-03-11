@@ -1,7 +1,6 @@
 from fastapi import APIRouter, Depends, HTTPException, UploadFile, status
 from fastapi.responses import FileResponse
 
-import src.auth.dependencies as auth_deps
 import src.document.dependencies as document_deps
 import src.logo.dao as logo_dao
 import src.project.dependencies as project_deps
@@ -18,7 +17,7 @@ router = APIRouter(
 
 @router.get(
     "/project/{project_id}/logo",
-    dependencies=[Depends(auth_deps.is_project_participant)],
+    dependencies=[Depends(project_deps.is_project_participant)],
 )
 def download_project_logo(
     project: project_models.Project = Depends(project_deps.get_project_by_id),
@@ -33,7 +32,7 @@ def download_project_logo(
 @router.put(
     "/project/{project_id}/logo",
     dependencies=[
-        Depends(auth_deps.is_project_participant),
+        Depends(project_deps.is_project_participant),
         Depends(document_deps.is_logo),
     ],
     status_code=status.HTTP_201_CREATED,
@@ -66,7 +65,7 @@ def upload_project_logo(
 
 @router.delete(
     "/project/{project_id}/logo",
-    dependencies=[Depends(auth_deps.is_project_owner)],
+    dependencies=[Depends(project_deps.is_project_owner)],
     status_code=status.HTTP_204_NO_CONTENT,
 )
 def delete_logo(
