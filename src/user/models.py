@@ -1,7 +1,7 @@
 from sqlalchemy import Integer, String
 from sqlalchemy.orm import Mapped, mapped_column, relationship
 
-import src.auth.models
+import src.project.models
 from src.shared.database import Base
 from src.shared.models import BaseTimestamp
 
