@@ -183,3 +183,4 @@ cython_debug/
 /lambda/*/package
 !/lambda/*/*.py
 *.zip
+openapi.json

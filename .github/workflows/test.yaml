@@ -3,12 +3,10 @@ name: CI - Test
 # on simple pull requests and pushes just run the tests
 on:
   push:
-    branches: [main]
     tags-ignore:
       - v[0-9]+
   pull_request:
     types: [opened, reopened]
-    branches: [main]
 
 env:
   SECRET_KEY: ${{ secrets.SECRET_KEY }}
@@ -26,7 +24,7 @@ jobs:
     # https://docs.github.com/en/actions/using-containerized-services/creating-postgresql-service-containers
     services:
       postgres:
-        image: postgres
+        image: postgres:16.2-alpine
         env:
           POSTGRES_USER: ${{ env.POSTGRES_USER }}
           POSTGRES_PASSWORD: ${{ env.POSTGRES_PASSWORD }}

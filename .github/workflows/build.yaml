@@ -4,6 +4,9 @@ on:
   push:
     tags:
       - v[0-9]+
+  pull_request:
+    types: [opened, reopened]
+    branches: [main]
 
 env:
   AWS_REGION: eu-north-1
@@ -89,4 +92,3 @@ jobs:
           task-definition: task-definition.json
           service: ${{ env.AWS_TASK_FAMILY }}
           cluster: ${{ env.AWS_CLUSTER }}
-          wait-for-service-stability: true

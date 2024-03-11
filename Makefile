@@ -36,7 +36,7 @@ stop-compose-clear-full:
 
 dev-local:
 	make stop-compose
-	docker compose up -d db
+	docker compose --env-file ./.env up -d db
 	poetry run uvicorn src.main:app --host "0.0.0.0" --port 8000 --reload
 
 dev-container:
