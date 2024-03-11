@@ -1,12 +1,7 @@
 name: CI - Test
 
 # on simple pull requests and pushes just run the tests
-on:
-  push:
-    tags-ignore:
-      - v[0-9]+
-  pull_request:
-    types: [opened, reopened]
+on: push
 
 env:
   SECRET_KEY: ${{ secrets.SECRET_KEY }}
