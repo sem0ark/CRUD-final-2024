@@ -24,7 +24,14 @@ def get_accessible_projects(
     if not user:
         return None
 
-    return [assoc.project for assoc in user.projects][offset : offset + limit]
+    return [
+        permission.project
+        for permission in db.query(auth_models.Permission)
+        .filter_by(user_id=user_id)
+        .limit(limit)
+        .offset(offset)
+        .all()
+    ]
 
 
 def create_project(

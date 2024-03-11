@@ -50,9 +50,17 @@ def get_available_documents(
     offset: int = 0,
 ) -> list[document_models.Document] | None:
     db_project = project_dao.get_project(db, project_id)
+
     if not db_project:
         return None
-    return list(db_project.documents)[offset : offset + limit]
+
+    return list(
+        db.query(document_models.Document)
+        .filter_by(project_id=project_id)
+        .limit(limit)
+        .offset(offset)
+        .all()
+    )
 
 
 def delete_document(db: Session, document_id: str) -> None:
